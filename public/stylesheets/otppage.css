@@ -1,0 +1,30 @@
+/* public/styles.css */
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  color: #333;
+}
+
+p {
+  font-size: 24px;
+  color: #0077b6;
+  margin-top: 20px;
+}
+
+/* Styles for the OTP container */
+.otp-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  max-width: 400px;
+  margin-top: 50px;
+}

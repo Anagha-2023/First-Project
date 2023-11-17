@@ -1,0 +1,113 @@
+/* Reset default margin and padding for all elements */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Set a background color for the entire page */
+body {
+  background-color: #f0f0f0;
+  font-family: Arial, sans-serif;
+  background-image: url(/images/login-bg.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Style the container */
+.container {
+  width: 100%;
+  max-width: 400px;
+  margin-top: 180px;
+  margin-left: 534px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  
+}
+
+/* Style the form padding */
+.form-pad {
+  padding: 20px;
+}
+
+/* Style the login heading */
+.login-heading {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #000000;
+}
+.form-signin-heading{
+  margin-left: 26px;
+  margin-bottom: 32px;
+}
+/* Style error and success messages */
+.text-danger {
+  color: #d9534f; /* Red color for error messages */
+}
+
+.text-success {
+  color: rgb(93, 151, 93); /* Green color for success messages */
+}
+
+/* Style labels and input fields */
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 0px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  box-shadow: none;
+}
+
+/* Style the submit button */
+.btn-success {
+  background-color: #580707; /* Green button */
+  color: #fff;
+  font-size: medium;
+  border: none;
+  display: block;
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  
+}
+
+.btn-success:hover{
+  background-color: #2f0000;
+}
+
+/* Style the signup link */
+.signup {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.signup a {
+  text-decoration: none;
+  color: blue;
+}
+
+/* Style the error messages next to input fields */
+#emailerror,
+#passwordError {
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.forgot{
+  margin-left: 200px;
+  text-decoration: none;
+  color: #4b4646;
+}
+.forgot a{
+  text-decoration: none;
+  color: #2f0000;
+}
