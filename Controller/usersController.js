@@ -4,18 +4,42 @@ const UserModel = require('../models/User');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const mongoose = require('mongoose');
 
-
-const categoryModel = require("../models/category");
+const CategoryModel = require("../models/category");
 const {productModel} = require("../models/product");
 
 const { sentOtp } = require("../nodeMailer");
 const {error , log } = require("console");
 
 
-const product= (req,res)=>{
-  res.redirect('/product-details')
-}
+const product=async (req, res) => {
+  try {
+    const id = req.params.productId;
+
+    const product = await productModel.findById(id);
+    const category = await CategoryModel.find({});
+    if (!product) {
+      // Handle the case where the product with the specified id is not found
+      return res.status(404).json({
+        message: "No such product found",
+      });
+    }
+    // Render a template to display the product details
+    res.render("product-details", {
+      product,
+      category,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Internal Server Error",
+      errorMessage: error.message,
+    });
+  }
+};
+  
+
 const homepage = (req, res) => {
   res.render('home', { user: userName })
 }
@@ -27,7 +51,7 @@ const getSignup = (req, res) => {
 
 
 const signuppost = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, phone, confirmpassword } = req.body;
 
   try {
     // Check if the user already exists in the database
@@ -43,6 +67,8 @@ const signuppost = async (req, res) => {
       name: username,
       email: email,
       password: password,
+      confirmpassword: confirmpassword,
+      phone: phone,
       status: false,
     };
     req.session.otp = otp;
@@ -145,6 +171,124 @@ const loginpost = async (req, res) => {
 //     res.status(500).send('Internal Server Error');
 //   }
 // };
+  
+const userShop = async (req, res) => {
+  try {
+
+    const perPage = 6; // Define how many products you want per page
+    const page = parseInt(req.query.page) || 1; // Get the page number from the request query parameters
+    const sortOption = req.query.sort || 'featured'; // Get the sort option from the request query parameters or default to 'featured
+    const selectedCategory = req.query.category || null;
+    const searchQuery = req.query.search || '';
+
+    let query = {
+      isFeatured: true,
+      $or: [{
+        productName: {
+            $regex: searchQuery,
+            $options: 'i'
+          }
+        },
+        {
+          brand: {
+            $regex: searchQuery,
+            $options: 'i'
+          }
+        },
+      ],
+    };
+
+
+    let sortCriteria = {};
+    if (sortOption === 'lowToHigh') {
+      sortCriteria = {
+        afterDiscount: 1
+      };
+    } else if (sortOption === 'highToLow') {
+      sortCriteria = {
+        afterDiscount: -1
+      };
+    } else if (sortOption === 'releaseDate') {
+      sortCriteria = {
+        createdAt: -1
+      }; // or any other field for release date
+    } else if (sortOption === 'avgRating') {
+      sortCriteria = {
+        rating: -1
+      }; // or any other field for average rating
+    } else {
+      // Default to 'featured' or any other default sorting option
+      sortCriteria = {
+        createdAt: -1
+      }; // Default sorting
+    }
+
+
+if (selectedCategory && mongoose.Types.ObjectId.isValid(selectedCategory)) {
+  query.category = new mongoose.Types.ObjectId(selectedCategory);
+}
+    let products = await productModel.find(query)
+      // .populate("category", "name")
+      .populate({
+        path: "category",
+        select: "name",
+        match: { _id: new mongoose.Types.ObjectId(selectedCategory) }, // Add this match condition
+      })
+      .sort(sortCriteria)
+      .skip(perPage * (page - 1)) // Skip products based on pagination
+      .limit(perPage); // Limit the number of products per page
+
+    // Reset filterProduct when the page changes
+    if (!req.query.category && page > 1) {
+      req.session.filterProduct = null;
+    }
+
+
+    // const totalProducts = await productModel.countDocuments({isFeatured: true});
+    const totalProducts = await productModel.countDocuments();
+
+
+    // Retrieve products based on the latest update timestamp
+    // const latestProducts = await productModel.find({
+    //     isFeatured: true
+    //   })
+    const latestProducts = await productModel.find({
+        isFeatured: true
+      })
+      .populate("category", "name")
+      .sort({
+        createdAt: -1
+      }) // Sort by the most recent updates
+      .limit(3); // Retrieve the latest 3 products
+
+    const category = await CategoryModel.find();
+
+
+    // Calculate the total number of pages
+    const totalPages = Math.ceil(totalProducts / perPage);
+
+    // if (req.session.filterProduct) {
+    //   products = req.session.filterProduct
+    // }
+
+    res.render("user-shop", {
+      products,
+      newProducts: latestProducts,
+      category,
+      currentPage: page,
+      totalPages,
+      sortOption,
+      selectedCategory: selectedCategory
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Some error caused while rendering shop page",
+    });
+  }
+};
+
+
 
 
 const forgotpassword = (req, res) => {

@@ -130,7 +130,6 @@
 
 
     <section class="content-main">
-
         <div class="content-header">
             <div>
                 <h2 class="content-title card-title">Product Management</h2>
@@ -352,6 +351,16 @@
                                             value="<%= item.price %>" required>
                                     </div>
                                     <div class="form-group mb-3">
+                                        <label for="editProductPrice">Discount Price</label>
+                                        <input type="number" class="form-control" id="editProductPrice" name="price"
+                                            value="<%= item.discountPrice %>" required>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label for="editProductPrice">After Discount</label>
+                                        <input type="number" class="form-control" id="editProductPrice" name="price"
+                                            value="<%= item.afterDiscount %>" required>
+                                    </div>
+                                    <div class="form-group mb-3">
                                         <label for="editProductRatings">Ratings</label>
                                         <input type="number" class="form-control" id="product-rating" name="rating"
                                             value="<%= item.rating %>" required>
@@ -570,55 +579,55 @@
 
 
 
-            $(document).ready(function () {
-                // Fetch categories from the backend API
-                $.ajax({
-                    url: 'product-management/getCategories', // Adjust the URL as needed
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function (data) {
-                        // Iterate over the categories and add options to the select boxes
-                        data.forEach(function (category) {
-                            $('.product-category-select').each(function () {
-                                const productId = $(this).data('product-id');
-                                if ($(this).attr('id') ===
-                                    `productCategory${productId}`) {
-                                    $(this).append($('<option>', {
-                                        value: category._id,
-                                        text: category.name
-                                    }));
-                                }
-                            });
+        $(document).ready(function () {
+            // Fetch categories from the backend API
+            $.ajax({
+                url: 'product-management/getCategories', // Adjust the URL as needed
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    // Iterate over the categories and add options to the select boxes
+                    data.forEach(function (category) {
+                        $('.product-category-select').each(function () {
+                            const productId = $(this).data('product-id');
+                            if ($(this).attr('id') ===
+                                `productCategory${productId}`) {
+                                $(this).append($('<option>', {
+                                    value: category._id,
+                                    text: category.name
+                                }));
+                            }
                         });
-                    },
-                    error: function (error) {
-                        console.error(error);
-                        //This is For Edit Product
+                    });
+                },
+                error: function (error) {
+                    console.error(error);
+                    //This is For Edit Product
 
                     }
                 });
             });
 
 
-            $(document).ready(function () {
-                // Fetch categories from the backend API
-                $.ajax({
-                    url: 'product-management/getCategories', // Adjust the URL as needed
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function (data) {
-                        // Iterate over the categories and add options to the select box
-                        data.forEach(function (category) {
-                            $('#productCategory').append($('<option>', {
-                                value: category._id,
-                                text: category.name
-                            }));
-                        });
-                    },
-                    error: function (error) {
-                        console.error(error);
-                        // this is for add new product
-                        // Handle the error appropriately (e.g., display an error message)
+        $(document).ready(function () {
+            // Fetch categories from the backend API
+            $.ajax({
+                url: 'product-management/getCategories', // Adjust the URL as needed
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    // Iterate over the categories and add options to the select box
+                    data.forEach(function (category) {
+                        $('#productCategory').append($('<option>', {
+                            value: category._id,
+                            text: category.name
+                        }));
+                    });
+                },
+                error: function (error) {
+                    console.error(error);
+                    // this is for add new product
+                    // Handle the error appropriately (e.g., display an error message)
 
                     }
                 });
