@@ -8,7 +8,6 @@
 body {
   background-color: #f0f0f0;
   font-family: Arial, sans-serif;
-  background-image: url(/images/login-bg.jpg);
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -23,7 +22,7 @@ body {
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  
+
 }
 
 /* Style the form padding */
@@ -38,17 +37,21 @@ body {
   margin-bottom: 20px;
   color: #000000;
 }
-.form-signin-heading{
+
+.form-signin-heading {
   margin-left: 26px;
   margin-bottom: 32px;
 }
+
 /* Style error and success messages */
 .text-danger {
-  color: #d9534f; /* Red color for error messages */
+  color: #d9534f;
+  /* Red color for error messages */
 }
 
 .text-success {
-  color: rgb(93, 151, 93); /* Green color for success messages */
+  color: rgb(93, 151, 93);
+  /* Green color for success messages */
 }
 
 /* Style labels and input fields */
@@ -68,7 +71,8 @@ label {
 
 /* Style the submit button */
 .btn-success {
-  background-color: #580707; /* Green button */
+  background-color: rgb(0, 128, 102);
+  /* Green button */
   color: #fff;
   font-size: medium;
   border: none;
@@ -77,11 +81,11 @@ label {
   padding: 10px;
   border-radius: 3px;
   cursor: pointer;
-  
+
 }
 
-.btn-success:hover{
-  background-color: #2f0000;
+.btn-success:hover {
+  background-color: rgb(4, 71, 58);
 }
 
 /* Style the signup link */
@@ -92,7 +96,11 @@ label {
 
 .signup a {
   text-decoration: none;
-  color: blue;
+  color: #4b4646;
+}
+
+.signup a:hover {
+  color: #000000;
 }
 
 /* Style the error messages next to input fields */
@@ -102,12 +110,17 @@ label {
   margin-top: 5px;
 }
 
-.forgot{
+.forgot {
   margin-left: 200px;
   text-decoration: none;
   color: #4b4646;
 }
-.forgot a{
+
+.forgot a {
   text-decoration: none;
-  color: #2f0000;
+  color: #4b4646;
+}
+
+.forgot a:hover {
+  color: #000000;
 }

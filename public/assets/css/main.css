@@ -128,7 +128,7 @@ input:focus::-moz-placeholder {
 }
 
 a {
-  color: rgb(238, 113, 176);
+  color: #088178;
 }
 
 a:hover {
@@ -137,18 +137,18 @@ a:hover {
 
 /*--- Common Classes---------------------*/
 ::-moz-selection {
-  background: rgb(238, 113, 176);
+  background: #088178;
   /* WebKit/Blink Browsers */
   color: #fff;
 }
 ::selection {
-  background: rgb(238, 113, 176);
+  background: #088178;
   /* WebKit/Blink Browsers */
   color: #fff;
 }
 
 ::-moz-selection {
-  background: rgb(238, 113, 176);
+  background: #088178;
   /* Gecko Browsers */
   color: #fff;
 }
@@ -279,7 +279,7 @@ input[type=number]:focus,
 }
 
 .text-brand {
-  color: rgb(238, 113, 176) !important;
+  color: #088178 !important;
 }
 
 .text-primary {
@@ -323,7 +323,7 @@ input[type=number]:focus,
 }
 
 .bg-brand {
-  background-color: rgb(238, 113, 176) !important;
+  background-color: #088178 !important;
 }
 
 .bg-primary {
@@ -448,7 +448,7 @@ input[type=number]:focus,
 }
 
 .border-brand {
-  border-color: rgb(238, 113, 176) !important;
+  border-color: #088178 !important;
 }
 
 .border-muted {
@@ -727,11 +727,11 @@ strong,
   position: absolute;
   bottom: 0;
   left: 0;
-  background-color: rgb(238, 113, 176);
+  background-color: #088178;
 }
 
 .section-title span {
-  color: rgb(238, 113, 176);
+  color: #088178;
 }
 
 h3.section-title {
@@ -813,7 +813,7 @@ h5.widget-title {
 /*COMPONENTS -> BUTTONS*/
 .btn-default {
   color: #fff;
-  background-color: rgb(238, 113, 176);
+  background-color: #088178;
   border-radius: 50px;
   padding: 13px 28px;
 }
@@ -868,12 +868,12 @@ h5.widget-title {
 }
 
 .btn-shadow-brand:hover {
-  border: 1px solid rgb(238, 113, 176);
+  border: 1px solid #088178;
 }
 
 .btn-brand {
-  background-color: rgb(238, 113, 176);
-  border-color: rgb(238, 113, 176);
+  background-color: #088178;
+  border-color: #088178;
 }
 
 button.submit, button[type='submit'] {
@@ -882,7 +882,7 @@ button.submit, button[type='submit'] {
   padding: 12px 40px;
   color: #ffffff;
   border: none;
-  background-color: rgb(238, 113, 176);
+  background-color: #088178;
   border: 1px solid #046963;
   border-radius: 5px;
 }
@@ -928,7 +928,7 @@ button.submit:hover, button[type='submit']:hover {
   border-radius: 4px;
   color: #fff;
   border: 1px solid #046963;
-  background-color: rgb(238, 113, 176);
+  background-color: #088178;
   cursor: pointer;
   -webkit-transition: all 300ms linear 0s;
   transition: all 300ms linear 0s;
@@ -967,7 +967,7 @@ button.submit:hover, button[type='submit']:hover {
 
 .btn.btn-brush, .button.btn-brush {
   background-color: transparent;
-  color: rgb(238, 113, 176);
+  color: #088178;
   border: 0;
   padding: 14px 80px 14px 65px;
   background-repeat: no-repeat;
@@ -1163,7 +1163,7 @@ textarea:focus {
 }
 
 .select2-dropdown .select2-search--dropdown .select2-search__field {
-  border: 1px solid rgb(238, 113, 176);
+  border: 1px solid #088178;
   margin-bottom: 15px;
   border-radius: 5px;
   height: 40px;
@@ -1224,7 +1224,7 @@ textarea:focus {
   padding: 12px 40px;
   color: #ffffff;
   border: none;
-  background-color: rgb(238, 113, 176);
+  background-color: #088178;
   border: 1px solid #046963;
   border-radius: 5px;
 }
@@ -1326,8 +1326,8 @@ label {
 }
 
 .custome-checkbox input[type="checkbox"]:checked + .form-check-label::before {
-  background-color: rgb(238, 113, 176);
-  border-color: rgb(238, 113, 176);
+  background-color: #088178;
+  border-color: #088178;
 }
 
 .custome-checkbox input[type="checkbox"]:checked + .form-check-label::after {
@@ -1483,7 +1483,7 @@ label {
   outline: none !important;
   -webkit-box-shadow: none;
   box-shadow: none;
-  border-color: rgb(238, 113, 176);
+  border-color: #088178;
 }
 
 .comment-form input {
@@ -1503,7 +1503,7 @@ label {
   outline: none !important;
   -webkit-box-shadow: none;
   box-shadow: none;
-  border-color: rgb(238, 113, 176);
+  border-color: #088178;
 }
 
 .comment-form button {
@@ -1512,7 +1512,7 @@ label {
   padding: 12px 40px;
   color: #ffffff;
   border: none;
-  background-color: rgb(238, 113, 176);
+  background-color: #088178;
   border: 1px solid #046963;
   border-radius: 4px;
 }
@@ -1557,9 +1557,9 @@ label {
 }
 
 .button-contactForm {
-  background: rgb(238, 113, 176);
+  background: #088178;
   color: #fff;
-  border-color: rgb(238, 113, 176);
+  border-color: #088178;
   padding: 12px 25px;
 }
 
@@ -1853,8 +1853,8 @@ label {
 }
 
 .dot-style-1 ul li.slick-active button {
-  background: rgb(238, 113, 176);
-  border-color: rgb(238, 113, 176);
+  background: #088178;
+  border-color: #088178;
 }
 
 .dot-style-1.dot-style-1-position-1 ul {
@@ -1919,9 +1919,9 @@ label {
 }
 
 .slider-arrow .slider-btn:hover {
-  background-color: rgb(238, 113, 176);
+  background-color: #088178;
   color: #fff;
-  border-color: rgb(238, 113, 176);
+  border-color: #088178;
 }
 
 .slider-arrow.slider-arrow-2 .slider-btn {
@@ -5172,11 +5172,11 @@ h6.post-title {
 }
 
 .header-top-ptb-1 #news-flash li {
-  min-height: 10px;
+  min-height: 14px;
 }
 
 .header-top-ptb-1 #news-flash i {
-  line-height: 10px;
+  line-height: 6px;
   margin-right: 5px;
 }
 
@@ -5186,14 +5186,13 @@ h6.post-title {
   display: flex;
   -webkit-box-pack: end;
   -ms-flex-pack: end;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 .header-info > ul {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  justify-content: center;
 }
 
 .header-info > ul > li {
@@ -5350,8 +5349,8 @@ h6.post-title {
 }
 
 .logo.logo-width-1 a img {
-  width: 180px;
-  min-width: 180px;
+  width: 120px;
+  min-width: 120px;
 }
 
 .search-style-1 form {
@@ -6768,10 +6767,6 @@ h6.post-title {
 span.fi-rs-apps {
   font-size: 19px;
   opacity: 0.7;
-}
-.header-info-right{
-  display: block;
-  width: max-content;
 }
 
 .hotline i {
@@ -9302,8 +9297,6 @@ span.fi-rs-apps {
   }
   .hero-slider-1 .single-slider-img-1 {
     height: 350px;
-    display: block;
-    align-items: center;
   }
   .home-slider.pt-50 {
     padding-top: 0 !important;

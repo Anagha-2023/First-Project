@@ -1,0 +1,532 @@
+<%- include('partials/header.ejs') %>
+    <!-- Quick view -->
+
+
+    <header class="header-area header-style-1 header-height-2">
+        <div class="header-top header-top-ptb-1 d-none d-lg-block">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-xl-3 col-lg-4">
+                        <div class="header-info">
+                            <ul>
+                                <li><i class="fi-rs-smartphone"></i> <a href="#">(+01) - 2345 - 6789</a></li>
+                                <li><i class="fi-rs-marker"></i><a href="page-contact.html">Our location</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-4">
+                        <!-- <div class="text-center">
+                        <div id="news-flash" class="d-inline-block">
+                            <ul>
+                                <li>Get great devices up to 50% off <a href="shop-grid-right.html">View details</a></li>
+                                <li>Supper Value Deals - Save more with coupons</li>
+                                <li>Trendy 25silver jewelry, save up 35% off today <a href="shop-grid-right.html">Shop
+                                        now</a></li>
+                            </ul>
+                        </div>
+                    </div> -->
+                    </div>
+
+                    <div class="col-xl-3 col-lg-4">
+                        <div class="header-info header-info-right">
+                            <ul>
+
+                                <!-- <li><i class="fi-rs-user"></i><a href="/signup">Sign Up</a></li>
+                                <li><i class="fi-rs-user"></i><a href="/login">Log In </a></li>    -->
+
+                                <li><i class="fa-solid fa-user"></i><a href="/profile">Profile</a></li>
+
+                                <li><i class="fi-rs-user"></i><a href="/logout">Logout</a></li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-middle header-middle-ptb-1 d-none d-lg-block">
+            <div class="container">
+                <div class="header-wrap">
+                    <div class="logo logo-width-1">
+                        <a href="/"><img src="/assets/imgs/theme/logo.svg.png" alt="logo"></a>
+                    </div>
+                    <div class="header-right">
+                        <div class="search-style-2">
+                            <form action="/shop" method="get">
+                                <select class="select-active" name="category">
+                                    <option value="">All Categories</option>
+                                    <% category.forEach((category)=>{ %>
+                                        <option value="<%= category._id  %>">
+                                            <%= category.name %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                                <input type="text" name="search" id="search" placeholder="Search for items...">
+                                <button class="btn text-light  bg-brand" type="submit">Search</button>
+                            </form>
+                        </div>
+                        <div class="header-action-right">
+                            <div class="header-action-2">
+                                <div class="header-action-icon-2">
+                                    <a href="/wishlist" title="Wishlist">
+                                        <img class="svgInject" alt="Evara"
+                                            src="/assets/imgs/theme/icons/icon-heart.svg">
+                                        <!-- <span class="pro-count blue">4</span> -->
+                                    </a>
+                                </div>
+                                <div class="header-action-icon-2">
+                                    <% if(cart) {%>
+                                        <a class="mini-cart-icon" href="/getCart" title="Cart">
+                                            <img alt="Evara" src="/assets/imgs/theme/icons/icon-cart.svg">
+                                            <span class="pro-count blue">
+                                                <%= cartItemCount %>
+                                            </span>
+                                        </a>
+                                        <% } %>
+                                           
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-bottom header-bottom-bg-color sticky-bar">
+            <div class="container">
+                <div class="header-wrap header-space-between position-relative">
+                    <div class="logo logo-width-1 d-block d-lg-none">
+                        <a href="/"><img src="/assets/imgs/theme/logo.svg.png" alt="logo"></a>
+                    </div>
+                    <div class="header-nav d-none d-lg-flex">
+                        
+                        <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block">
+                            <nav>
+                                <ul>
+                                    <li><a href="/">Home </a></li>
+
+
+                                    <li>
+                                        <a href="page-about.html">About</a>
+                                    </li>
+                                    <li><a class="active" href="/shop">Shop </a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a href="page-contact.html">Contact</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    
+                    <div class="header-action-right d-block d-lg-none">
+                        <div class="header-action-2">
+                            <div class="header-action-icon-2">
+                                <a href="shop-wishlist.html">
+                                    <img alt="Evara" src="/assets/imgs/theme/icons/icon-heart.svg">
+
+                                    <!-- <span class="pro-count white">4</span> -->
+                                </a>
+                            </div>
+                            <div class="header-action-icon-2">
+                                <% if(cart) {%>
+                                    <a class="mini-cart-icon" href="/getCart">
+                                        <img alt="Evara" src="/assets/imgs/theme/icons/icon-cart.svg">
+                                        <span class="pro-count white">
+                                            <%= cartItemCount %>
+                                        </span>
+                                    </a>
+                                    <% } %>
+                                        
+                            </div>
+                            <div class="header-action-icon-2 d-block d-lg-none">
+                                <div class="burger-icon burger-icon-white">
+                                    <span class="burger-icon-top"></span>
+                                    <span class="burger-icon-mid"></span>
+                                    <span class="burger-icon-bottom"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="mobile-header-active mobile-header-wrapper-style">
+        <div class="mobile-header-wrapper-inner">
+            <div class="mobile-header-top">
+                <div class="mobile-header-logo">
+                    <a href="/"><img src="/assets/imgs/theme/logo.svg.png" alt="logo"></a>
+                </div>
+                <div class="mobile-menu-close close-style-wrap close-style-position-inherit">
+                    <button class="close-style search-close">
+                        <i class="icon-top"></i>
+                        <i class="icon-bottom"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="mobile-header-content-area">
+                <div class="mobile-search search-style-3 mobile-header-border">
+                    <form action="#">
+                        <input type="text" placeholder="Search for items…">
+                        <button type="submit"><i class="fi-rs-search"></i></button>
+                    </form>
+                </div>
+                <div class="mobile-menu-wrap mobile-header-border">
+                    
+                    <!-- mobile menu start -->
+                    <nav>
+                        <ul class="mobile-menu">
+                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="/">Home</a>
+
+                            </li>
+                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="/shop">shop</a>
+
+                            </li>
+
+
+
+                           
+                        </ul>
+                    </nav>
+                    <!-- mobile menu end -->
+                </div>
+                <div class="mobile-header-info-wrap mobile-header-border">
+                    <div class="single-mobile-header-info mt-30">
+                        <a href="page-contact.html"> Our location </a>
+                    </div>
+                    <div class="single-mobile-header-info">
+                        <a href="/login">Log In / Sign Up </a>
+                    </div>
+                    <div class="single-mobile-header-info">
+                        <a href="#">(+01) - 2345 - 6789 </a>
+                    </div>
+                </div>
+                <div class="mobile-social-icon">
+                    <h5 class="mb-15 text-grey-4">Follow Us</h5>
+                    <a href="#"><img src="/assets/imgs/theme/icons/icon-facebook.svg" alt=""></a>
+                    <a href="#"><img src="/assets/imgs/theme/icons/icon-twitter.svg" alt=""></a>
+                    <a href="#"><img src="/assets/imgs/theme/icons/icon-instagram.svg" alt=""></a>
+                    <a href="#"><img src="/assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a>
+                    <a href="#"><img src="/assets/imgs/theme/icons/icon-youtube.svg" alt=""></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <main class="main">
+        <div class="page-header breadcrumb-wrap">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="/" rel="nofollow">Home</a>
+                    <span></span> Shop
+                </div>
+            </div>
+        </div>
+        <section class="mt-50 mb-50">
+            <div class="container">
+                <div class="row">
+
+
+                    <div class="col-lg-9">
+                        <div class="shop-product-fillter">
+                            <!-- <div class="totall-product">
+                            <p> We found <strong class="text-brand">688</strong> items for you!</p>
+                        </div> -->
+                            <div class="sort-by-product-area">
+
+
+                                <div class="sort-by-cover">
+                                    <div class="sort-by-product-wrap">
+                                        <div class="sort-by">
+                                            <span><i class="fi-rs-apps-sort"></i>Sort by:</span>
+                                        </div>
+                                        <div class="sort-by-dropdown-wrap" id="sortDropdown">
+                                            <span>
+                                                <%= sortOption %> <i class="fi-rs-angle-small-down"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="sort-by-dropdown">
+                                        <form action="/shop" id="filterForm" method="get">
+                                            <ul id="sort" name="sort">
+                                                <li><a class="sort-option" data-sort="featured"
+                                                        href="/shop">Featured</a></li>
+                                                <li><a class="sort-option" data-sort="lowToHigh"
+                                                        href="/shop?sort=lowToHigh">Price: Low to High</a></li>
+
+                                                <li><a class="sort-option" data-sort="highToLow"
+                                                        href="/shop?sort=highToLow">Price: High to Low</a></li>
+
+                                                <li><a class="sort-option" data-sort="releaseDate"
+                                                        href="/shop?sort=releaseDate">Release Date</a></li>
+
+                                                <li><a class="sort-option" data-sort="avgRating"
+                                                        href="/shop?sort=avgRating">Avg. Rating</a></li>
+                                            </ul>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                        <div class="row product-grid-3 " id="productList">
+                            <% products?.forEach((item,index)=>{ %>
+                                <% if(item.isFeatured){ %>
+                                    <div class="col-lg-3 col-md-3 col-6 col-sm-6">
+                                        <div class="product-cart-wrap mb-30">
+                                            <div class="product-img-action-wrap">
+                                                <div class="product-img product-img-zoom">
+                                                    <a href="product-details/<%= item._id %>">
+                                                        <img class="default-img" src="/<%= item.image %>" alt="">
+                                                        <img class="hover-img" src="/<%= item.image %>" alt="">
+                                                    </a>
+                                                </div>
+                                                <div class="product-action-1">
+                                                    <a aria-label="Add to cart" class="action-btn hover-up"
+                                                        onclick="addtoCart('<%= item._id %>')">
+                                                        <i class="fi-rs-shopping-bag-add"></i>
+                                                    </a>
+
+
+
+                                                    <a aria-label="Add To Wishlist" class="action-btn hover-up"
+                                                        onclick="addtoWishlist('<%= item._id %>')" href="/wishlist"><i
+                                                            class="fi-rs-heart"></i>
+                                                    </a>
+                                                    <!-- <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i
+                                                class="fi-rs-shuffle"></i></a> -->
+                                                </div>
+                                                <div class="product-badges product-badges-position product-badges-mrg">
+                                                    <span class="hot">Hot</span>
+                                                </div>
+                                            </div>
+                                            <div class="product-content-wrap">
+                                                <div class="product-category">
+                                                    <a href="#">
+                                                        <%= item.brand %>
+                                                    </a>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <h2>
+                                                        <span class="product-name">
+                                                            <%= item.productName.substring(0, 22) +
+                                                                (item.productName.length> 25 ? '...' : '') %>
+                                                        </span>
+                                                    </h2>
+                                                </div>
+
+                                                <div class="product-price">
+                                                    <span>₹ <%= item.afterDiscount %></span>
+                                                    <span class="old-price">
+                                                        <%= item.price %>
+                                                    </span>
+                                                    <span class="save-price color3 ml-15" style="font-size: 14px;">
+                                                        <%= item.discountPrice %>%
+                                                            off
+                                                    </span>
+                                                    <!-- <div class="product-action-1 show">
+                                            <a aria-label="Add To Cart" class="action-btn hover-up" href="shop-cart.html"><i class="fi-rs-shopping-bag-add"></i></a>
+                                        </div> -->
+                                                </div>
+                                                <div class="d-flex justify-content-center mt-2">
+                                                    <!-- <strong>Rating:</strong> -->
+                                                    <% for (let i=1; i <=5; i++) { %>
+                                                        <% if (i <=item.rating) { %>
+                                                            <i class="fa fa-star text-success"></i>
+                                                            <% } else { %>
+                                                                <i class="fa fa-star text-muted"></i>
+                                                                <% } %>
+                                                                    <% } %>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }; %>
+                                        <% }); %>
+
+                        </div>
+                        
+
+                        <!-- pagination -->
+                        <% if(products.length>=4){ %>
+                            <div class="pagination-area mt-15 mb-sm-5 mb-lg-0">
+                                <nav aria-label="Page navigation example">
+                                    <ul class="pagination justify-content-start">
+                                        <% if (currentPage> 1) { %>
+                                            <li class="page-item">
+                                                <a class="page-link"
+                                                    href="?page=<%= currentPage - 1 %>&sort=<%= sortOption %>"><i
+                                                        class="fa-solid fa-chevron-left"></i></i></a>
+                                            </li>
+                                            <% } %>
+
+                                                <% for (let i=1; i <=totalPages; i++) { %>
+                                                    <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                                        <a class="page-link"
+                                                            href="?page=<%= i %>&sort=<%= sortOption %>&category=<%= selectedCategory %>">
+                                                            <%= i %>
+                                                        </a>
+                                                    </li>
+                                                    <% } %>
+
+                                                        <% if (currentPage < totalPages) { %>
+                                                            <li class="page-item">
+                                                                <a class="page-link"
+                                                                    href="?page=<%= currentPage + 1 %>&sort=<%= sortOption %>"><i
+                                                                        class="fa-solid fa-chevron-right"></i></i></a>
+                                                            </li>
+                                                            <% } %>
+                                    </ul>
+                                </nav>
+                            </div>
+                            <% } %>
+
+
+
+                    </div>
+
+
+                    <div class="col-lg-3 primary-sidebar sticky-sidebar">
+                        <!-- <div class="row">
+                        <div class="col-lg-12 col-mg-6"></div>
+                        <div class="col-lg-12 col-mg-6"></div>
+                    </div> -->
+                        <div class="widget-category mb-30">
+                            <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
+                            <ul class="categories">
+                                <% category.forEach((category)=>{ %>
+                                    <li><a class="sort-option" href="/shop?category=<%= category._id %>">
+                                            <%= category.name %>
+                                        </a></li>
+                                    <% }) %>
+                            </ul>
+                        </div>
+
+                        
+                        <!-- Product sidebar Widget -->
+                        
+                        <button id="clearFiltersBtn" class="btn btn-sm btn-secondary" style="margin-bottom: 10px;" >Clear Filters</button>
+                        <div class="sidebar-widget product-sidebar  mb-30 p-30 bg-grey border-radius-10">
+                            <div class="widget-header position-relative mb-20 pb-10">
+                                <h5 class="widget-title mb-10">New products</h5>
+                                <div class="bt-1 border-color-1"></div>
+                            </div>
+
+                            <div class="single-post clearfix">
+                                <% newProducts.forEach((item)=> { %>
+                                    <% if (item && item.image) { %>
+                                        <div class="">
+                                            <div class="image">
+                                                <img src="/<%= item.image  %>" alt="#">
+                                            </div>
+                                            <div class="content pt-10">
+                                                <h5><a href="shop-product-detail.html">
+                                                        <%= item.productName.substring(0, 15) +
+                                                            (item.productName.length> 25 ? '..' : '') %>
+                                                    </a>
+                                                </h5>
+
+                                                <p class="price mb-0 mt-5">₹ <%= item.afterDiscount %>
+                                                        <span class="save-price text-brand color3 ml-15"
+                                                            style="font-size: 14px;">
+                                                            <%= item.discountPrice %>% off
+                                                        </span>
+                                                </p>
+                                                <!-- <div class="product-rate">
+                                        <div class="product-rating" style="width:90%"></div>
+                                    </div> -->
+                                                <div class="d-flex justify-content-end">
+                                                    <!-- <strong>Rating:</strong> -->
+                                                    <% for (let i=1; i <=5; i++) { %>
+                                                        <% if (i <=item.rating) { %>
+                                                            <i class="fa fa-star text-success"></i>
+                                                            <% } else { %>
+                                                                <i class="fa fa-star text-muted"></i>
+                                                                <% } %>
+                                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </div><br>
+                                        <% } %>
+                                            <% }) %>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            <!-- </div> -->
+        </section>
+
+
+        <script>
+            async function addtoCart(itemId) {
+                try {
+                    let response = await fetch('/addtocart/' + itemId, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    let title, text, iconClass;
+                    if (response.status === 200) {
+                        title = 'Success';
+                        text = 'Item added to the cart successfully.';
+                        iconClass = 'success';
+                    } else {
+                        title = 'Error';
+                        text = 'Failed to add item to the cart.';
+                        iconClass = 'error';
+                    }
+
+                    await Swal.fire({
+                        title: title,
+                        text: text,
+                        icon: iconClass,
+                        position: 'center', // Set the position to center
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+
+                    // if (response.status === 200) {
+                    //     // Do something upon success (if needed)
+                    // } else {
+                    //     // Do something upon error (if needed)
+                    // }
+                } catch (err) {
+                    console.error(err);
+
+                    await Swal.fire({
+                        title: 'Error',
+                        text: 'An error occurred.',
+                        icon: 'error',
+                        position: 'center',
+                        showConfirmButton: false,
+                        timer: 2000,
+                    });
+                }
+            }
+        </script>
+
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add a click event listener to the clearFiltersBtn
+        document.getElementById('clearFiltersBtn').addEventListener('click', function () {
+            // Redirect to the shop page without any filters
+            window.location.href = '/shop';
+        });
+    });
+</script>
+        
+
+
+        <%- include('partials/footer.ejs') %>

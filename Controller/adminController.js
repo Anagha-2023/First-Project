@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const session = require("express-session");
 const adminModel = require("../models/Admin");
-const admin=require("../routes/admin")
+const admin = require("../routes/admin")
 const UserModel = require("../models/User");
 const mongoose = require("mongoose");
 const nocache = require('nocache')
@@ -11,7 +11,7 @@ const nocache = require('nocache')
 
 let admiN;
 
-const adminlogin=(req, res) => {
+const adminlogin = (req, res) => {
   if (req.session.isAdmin) {
     return res.redirect("/admin");
   } else {
@@ -19,7 +19,7 @@ const adminlogin=(req, res) => {
   }
 };
 
-const adminpost=async (req, res) => {
+const adminpost = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -46,40 +46,70 @@ const adminpost=async (req, res) => {
   }
 };
 
-const adminhome=(req, res) => {
+const adminhome = (req, res) => {
   res.render("adminHome", { admiN });
 };
 
-const adminusers=async (req, res) => {
-  const users = await UserModel.find();
-  res.render("usersList", { users });
-};
+const adminusers = async (req, res) => {
+  const page = parseInt(req.query.page) || 1; // Get the requested page from query parameters
+  const limit = 5; // Number of users per page
 
-const blockuser=async(req,res)=>{
-  let { id } = req.body;
-  const users = await UserModel.findById(id);
-  if(users){
-      if(users.isBlocked === true) {
-          users.isBlocked = false;
-          users.save();
-          res.status(200).json({
-            status: true
-          });
-      }else if (users.isBlocked === false) {
-          users.isBlocked = true;
-          users.save();
-          res.status(201).json({
-            status: true
-          });
-  }
-}else{
-  res.status(402).json({
-      status: true
+  try {
+    const totalUsers = await UserModel.countDocuments();
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    const users = await UserModel.find()
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.render("usersList", {
+      users,
+      currentPage: page,
+      totalPages
     });
-}
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).send("Internal Server Error");
+  }
 };
 
-const userdelete=async (req, res) => {
+
+const blockuser = async (req, res) => {
+  try {
+    const { id } = req.body;
+    const user = await UserModel.findById(id);
+
+    if (user) {
+      // Toggle the block status
+      user.isBlocked = !user.isBlocked;
+      await user.save();
+
+      // Update the block status in the session if the user is logged in
+      if (req.session && req.session.user) {
+        req.session.user.isBlocked = user.isBlocked;
+      }
+
+      res.status(200).json({
+        status: true,
+        isBlocked: user.isBlocked,
+      });
+    } else {
+      res.status(404).json({
+        status: false,
+        message: 'User not found',
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: false,
+      message: 'Internal Server Error',
+    });
+  }
+};
+
+
+const userdelete = async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await UserModel.findByIdAndDelete(userId);
@@ -87,7 +117,7 @@ const userdelete=async (req, res) => {
     if (!user) {
       res.status(404).send("User not found");
     } else {
-      req.session.user=false;
+      req.session.user = false;
       res.send("User deleted successfully");
     }
   } catch (err) {
@@ -96,19 +126,19 @@ const userdelete=async (req, res) => {
   }
 };
 
-const useradd=(req, res) => {
+const useradd = (req, res) => {
   res.render("adminAdduser");
 };
 
-const adminlogout=(req, res) => {
+const adminlogout = (req, res) => {
   console.log("hello logout ");
 
-    req.session.isAdmin=false;
-    res.render('adminLogin')
+  req.session.isAdmin = false;
+  res.render('adminLogin')
 
 };
 
-const useraddpost=(req, res) => {
+const useraddpost = (req, res) => {
   const { username, email, password } = req.body;
 
   // Check if the user already exists in the database
@@ -138,7 +168,7 @@ const useraddpost=(req, res) => {
             res.send(
               '<script>alert("Error occurred while registering the user."); window.location.href = "/users";</script>'
             );
-  
+
           });
       }
     })
@@ -150,7 +180,7 @@ const useraddpost=(req, res) => {
     });
 };
 
-const userupdate=async (req, res) => {
+const userupdate = async (req, res) => {
   try {
     const userId = req.params.userId;
     const user = await UserModel.findById(userId);
@@ -165,7 +195,7 @@ const userupdate=async (req, res) => {
   }
 };
 
-const updatepost=async (req, res) => {
+const updatepost = async (req, res) => {
   try {
     const userId = req.params.userId;
 
@@ -181,7 +211,7 @@ const updatepost=async (req, res) => {
       );
       return;
     }
-  
+
     res.send(
       '<script> window.location.href = "/admin/users"; alert("User Details are updated successfully."); </script>'
     );
@@ -192,20 +222,32 @@ const updatepost=async (req, res) => {
   }
 };
 
-const usersearch=async (req, res) => {
+const usersearch = async (req, res) => {
   try {
-    const { searchTerm } = req.body;
-    console.log(searchTerm);
-    // Perform the user search based on the searchTerm
-    const Users = await UserModel.find({
-      $or: [
-        { name: { $regex: searchTerm, $options: "i" } }, // Case-insensitive name search
-        { email: { $regex: searchTerm, $options: "i" } }, // Case-insensitive email search
-      ],
+    const { search } = req.query; // Assuming the user name is in the query string
+
+    if (!search || typeof search !== 'string') {
+      return res.status(400).json({ message: "Invalid user name" });
+    }
+
+    const page = parseInt(req.query.page) || 1; // Get the requested page from query parameters
+    const limit = 5; // Number of users per page
+
+    const regex = new RegExp(search, 'i'); // Case-insensitive substring search in the name
+
+    const totalUsers = await UserModel.countDocuments({ name: regex });
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    const users = await UserModel.find({ name: regex })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.render("usersList", {
+      users,
+      currentPage: page,
+      totalPages,
+      search,
     });
-    
-    // Render a page with the search results
-    res.render("adminUserSearch", { Users });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -213,7 +255,16 @@ const usersearch=async (req, res) => {
 };
 
 
-module.exports={
+
+
+
+
+
+const logout = (req, res) => {
+  res.render('adminLogin')
+}
+
+module.exports = {
   adminlogin,
   adminpost,
   adminhome,
@@ -225,5 +276,6 @@ module.exports={
   userupdate,
   updatepost,
   usersearch,
-  blockuser
+  blockuser,
+  logout,
 }

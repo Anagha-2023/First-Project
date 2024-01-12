@@ -55,6 +55,13 @@ const productSchema = new mongoose.Schema({
        default: 0,
  
     },
+
+    discountPrice:{
+       type: Number,
+       default: 0,
+    },
+    afterDiscount:Number,
+ 
     
  }, {
     timestamps: true

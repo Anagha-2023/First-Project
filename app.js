@@ -42,8 +42,7 @@ const userSessionConfig = {
   name: 'userSession',
   secret: 'your-secret-key',
   resave: false,
-  saveUninitialized: false,
-  cookie: { maxAge: 3600000 }, // Session expires after 1 hour
+  saveUninitialized: true,
 };
 
 // Configuration for admin sessions

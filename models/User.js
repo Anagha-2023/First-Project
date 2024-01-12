@@ -7,14 +7,22 @@ const userSchema = new Schema({
   name: String,
   password: String,
   email: String,
+  phone: String,
   status: Boolean,
-  
-  isBlocked:{
-    type:Boolean,
-    default:false
-  }
-})
-
+  isBlocked: {
+    type: Boolean,
+    default: false,
+  },
+  address: {
+    street: String,
+    city: String,
+    state: String,
+    postalCode: String,
+    country: String,
+  },
+  stateOrCity: String,
+  pincodeOrZip: Number,
+});
 
 userSchema.pre('save', async function (next) {
   const user = this;
@@ -27,8 +35,8 @@ userSchema.pre('save', async function (next) {
   } catch (error) {
     return next(error);
   }
-});  
+});
 
-let model=mongoose.model('User',userSchema);
+let model = mongoose.model('User', userSchema);
 
-module.exports =model;
+module.exports = model;
