@@ -114,10 +114,9 @@ const getSignup = (req, res) => {
 
 
 const signuppost = async (req, res) => {
-  const { username, email, password, phone, confirmpassword } = req.body;
-  console.log(password);
-
   try {
+    const { username, email, password, phone, confirmpassword } = req.body;
+
     // Validate user input (You can use a validation library or implement your own validation logic)
 
     // Check if the user already exists in the database
@@ -126,23 +125,20 @@ const signuppost = async (req, res) => {
     if (foundUser) {
       return res.render('userSignup', { errorMessage: 'User already exists. Please log in.' });
     }
-    if (password.length < 8) {
-      return res.render('userSignup', { errorMessage: 'Password must be at least 8 characters long' })
 
+    if (password.length < 8) {
+      return res.render('userSignup', { errorMessage: 'Password must be at least 8 characters long' });
     } else {
-      console.log("Password length is fine");
       // Check for uppercase letters, lowercase letters, numbers, and special characters
       if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/\d/.test(password) || !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-        return res.render('userSignup', { errorMessage: 'Password must meet the specified criteria' })
+        return res.render('userSignup', { errorMessage: 'Password must meet the specified criteria' });
       }
-      console.log(password, confirmpassword, ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
     }
 
     // Compare Password and Confirm Password
     if (password !== confirmpassword) {
       return res.render('userSignup', { errorMessage: 'Passwords do not match.' });
     }
-
 
     // Generate and send OTP
     const otp = await sentOtp(email);
@@ -162,6 +158,7 @@ const signuppost = async (req, res) => {
 
     req.session.otp = otp;
     req.session.expirationtime = new Date();
+
     // Redirect to the OTP verification page
     res.redirect('/otp');
   } catch (error) {
@@ -169,6 +166,7 @@ const signuppost = async (req, res) => {
     res.status(500).send('<script>alert("Error occurred while processing the request."); window.location.href = "/signup";</script>');
   }
 };
+
 
 
 
@@ -187,17 +185,14 @@ const loginpage = (req, res) => {
 
 
 const loginpost = async (req, res) => {
-  console.log("?????????????????????????????????????????");
-  const { email, password } = req.body;
-  console.log(password, email, 'qwerirtyuioprsrs')
-
-
   try {
-    // Validate user input (You can use a validation library or implement your own validation logic)
-
+    const { email, password } = req.body;
+    console.log(password);
     // Check if the user exists in the database
     const user = await UserModel.findOne({ email: email });
-    console.log(user)
+
+    console.log(user);
+
     if (!user) {
       return res.render('index', { errorMessage: 'User not found' });
     }
@@ -208,13 +203,7 @@ const loginpost = async (req, res) => {
     }
 
     // Trim the entered password during login
-
-    console.log(user.password)
     const passwordMatch = await bcrypt.compare(password, user.password);
-
-    console.log('Password match:', passwordMatch);
-    console.log('Entered password during login:', password);
-    console.log('Retrieved hashed password during login:', user.password);
 
     if (passwordMatch) {
       user.status = true;
@@ -239,6 +228,7 @@ const loginpost = async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 };
+
 
 
 
@@ -285,6 +275,8 @@ const loginpost = async (req, res) => {
 //     res.status(500).send('Internal Server Error');
 //   }
 // };
+
+
 
 const userShop = async (req, res) => {
   try {
@@ -446,7 +438,7 @@ const forgotpost = async (req, res) => {
 
   const resetLink = `http://localhost:${3000}/reset-password?token=${token}`;
   const resetText = 'Click here to reset your password';
-
+  console.log(resetLink);
   const mailOptions = {
     from: 'anaghakb55@gmail.com',
     to: email,
@@ -487,7 +479,6 @@ const resetPassword = (req, res) => {
 
 const resetPasswordpost = async (req, res) => {
   const { password, confirmPassword } = req.body;
-  console.log(req.body.password)
 
   if (password !== confirmPassword) {
     return res.status(400).send('Passwords do not match');
@@ -497,21 +488,24 @@ const resetPasswordpost = async (req, res) => {
     // Find the user by email and update the password
     let user = await UserModel.findOne({ email: req.session.forgotEmail });
 
-
     if (!user) {
       return res.status(404).send('User not found');
     }
 
     // Update the user's password in your database or user storage
-    user.password = password;
+    user.password = await bcrypt.hash(password, 10);
     await user.save(); // Save the changes
 
-    res.render('index');
+    // Clear the session variable storing the forgot email after password reset
+    req.session.forgotEmail = null;
+
+    res.redirect('/login');
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
   }
 };
+
 
 // change password 
 
@@ -538,18 +532,14 @@ const resetPasswordGet = async (req, res) => {
 
 
 
-
-
-
-
-// Function to handle OTP verification after user submission
 const postVerifyOtp = async (req, res, next) => {
-  console.log("/////////////////////////////////////");
-  const { otp } = req.body;
-  const expirationtime = req.session.expirationtime;
   try {
+    console.log("/////////////////////////////////////");
+    const { otp } = req.body;
+    const expirationtime = req.session.expirationtime;
+
     if (req.session.otp !== undefined) {
-      const newtime = new Date(); // Define and initialize newtime here
+      const newtime = new Date();
       const expirationtime = req.session.expirationtime;
       let otpTime;
 
@@ -572,12 +562,14 @@ const postVerifyOtp = async (req, res, next) => {
       if (timeDifference <= 60 * 1000) {
         if (!isNaN(otp)) {
           if (otp === req.session.otp) {
-            // Save the user to the database
-            const newUser = new UserModel(req.session.user);
-
-            // await UserModel.insertMany([req.session.userDetails]);
-            // req.session.user = req.session.userDetails.email;
-
+            const newUser = new UserModel({
+              name: req.session.user.name,
+              email: req.session.user.email,
+              password: req.session.user.password,
+              confirmPassword: req.session.user.confirmPassword,
+              phone: req.session.user.phone,
+              status: false,
+            });
 
             const newReferrer = new Referral({
               referralId: uuidv4(),
@@ -585,66 +577,69 @@ const postVerifyOtp = async (req, res, next) => {
               userId: newUser.id,
             });
 
-            newReferrer.save()
-            console.log(newReferrer)
+            newReferrer.save();
 
             newUser.refId = newReferrer._id;
-            await newUser.save();
 
-
-            // Create a new wallet for the user
             const newWallet = new Wallet({
-              user: newUser.id
+              user: newUser.id,
             });
+
+            // Save the new wallet
             await newWallet.save();
 
-            // Update the user document with the reference to the wallet
+            // Update the user's wallet ID in the user document
             newUser.wallet = newWallet._id;
+
+            // Save the updated user
             await newUser.save();
 
             if (req.session.reflink) {
               try {
-                const referrer = await Referral.aggregate([{
-                  $match: {
-                    referralLink: req.session.reflink,
+                const referrer = await Referral.aggregate([
+                  {
+                    $match: {
+                      referralLink: req.session.reflink,
+                    },
                   },
-                },
-                {
-                  $lookup: {
-                    from: 'users', // Make sure to use the actual name of your User collection
-                    localField: 'userId',
-                    foreignField: '_id',
-                    as: 'user',
+                  {
+                    $lookup: {
+                      from: 'users',
+                      localField: 'userId',
+                      foreignField: '_id',
+                      as: 'user',
+                    },
                   },
-                },
-                {
-                  $unwind: '$user',
-                },
-                {
-                  $lookup: {
-                    from: 'wallets', // Make sure to use the actual name of your Wallet collection
-                    localField: 'user.wallet',
-                    foreignField: '_id',
-                    as: 'wallet',
+                  {
+                    $unwind: '$user',
                   },
-                },
-                {
-                  $unwind: '$wallet',
-                },
-                {
-                  $project: {
-                    userId: '$user.id',
-                    wallet: '$wallet',
+                  {
+                    $lookup: {
+                      from: 'wallets',
+                      localField: 'user.wallet',
+                      foreignField: '_id',
+                      as: 'wallet',
+                    },
                   },
-                },
+                  {
+                    $unwind: '$wallet',
+                  },
+                  {
+                    $project: {
+                      userId: '$user.id',
+                      wallet: '$wallet',
+                    },
+                  },
+
                 ]);
 
                 console.log(referrer);
 
                 if (referrer.length > 0) {
-                  const referralAmount = 500; // Change this to the desired referral amount
+                  const referralAmount = 500;
                   const referralBonus = referralAmount * 0.5;
 
+                  // Updating the referrer's wallet with the referral bonus
                   referrer[0].wallet.balance += referralBonus;
                   referrer[0].wallet.transactions.push({
                     amount: referralAmount,
@@ -652,33 +647,40 @@ const postVerifyOtp = async (req, res, next) => {
                     description: 'Referral Bonus',
                   });
 
+                  // Save the changes to the referrer's wallet
                   await Wallet.findByIdAndUpdate(referrer[0].wallet._id, referrer[0].wallet);
 
+                  // Updating the new user's wallet with the referral bonus
                   newWallet.balance += referralBonus;
                   newWallet.transactions.push({
                     amount: referralBonus,
                     type: 'credit',
                     description: 'Referral Bonus',
                   });
-                  newWallet.save();
+
+                  // Save the changes to the new user's wallet
+                  await newWallet.save();
+
+                  // Update the user's wallet ID in the user document
+                  newUser.wallet = newWallet._id;
+
+                  // Save the changes to the user document
+                  await newUser.save();
                 }
               } catch (err) {
                 console.error('Error finding referral:', err);
                 res.status(500).json({
                   success: false,
-                  message: err
+                  message: err,
                 });
               }
             }
 
-
-
-            console.log(newUser,"1111111111111111111111111111111111111111")
             req.session.user = req.session.user.email;
             req.session.otpExpired = false;
             req.session.otpFalse = false;
             res.render('index');
-            return; // Stop execution after rendering 'index'
+            return;
           } else {
             req.session.otpFalse = true;
           }
@@ -689,17 +691,22 @@ const postVerifyOtp = async (req, res, next) => {
       }
     }
 
-    // Continue with rendering 'otp' page
     res.render('otp', {
-      errorMessage: req.session.otpFalse
-        ? 'Incorrect OTP'
-        : 'OTP expired',
+      errorMessage: req.session.otpFalse ? 'Incorrect OTP' : 'OTP expired',
     });
   } catch (error) {
     console.error(error);
     res.render('otp', { errorMessage: 'An error occurred' });
   }
 };
+
+
+
+
+
+
+
+
 
 
 
@@ -795,9 +802,8 @@ const userProfile = async (req, res) => {
     const category = await CategoryModel.find({ status: 'active' });
     const addresses = await addressModel.findOne({ user: userId });
     console.log(addresses, ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
-    const user = await UserModel.findOne({ _id: userId })
-    console.log(user, "\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
-    let [userDetails] = await UserModel.aggregate([{
+
+    let [user] = await UserModel.aggregate([{
       $match: {
         _id: new mongoose.Types.ObjectId(userId), // Assuming userId is accessible
       },
@@ -813,13 +819,18 @@ const userProfile = async (req, res) => {
       $limit: 1
     }
     ])
+
+    console.log(user);
+
     const loggedUser = await Referral.findOne({
       userId: req.session.user.id
     })
-    console.log(loggedUser, "''''''''''''''''''''''''''''''''''''''''''''''''")
 
+    console.log(loggedUser)
     const generatedRefLink = `${req.protocol}://${req.headers.host}/signup?reflink=${loggedUser.referralLink}`
+
     console.log(generatedRefLink, "////////////////////////////////////////////")
+
     const wallet = await Wallet.findOne({ user: userId });
     console.log(wallet.balance, ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
     // Pagination logic
@@ -846,7 +857,6 @@ const userProfile = async (req, res) => {
       user: true,
       addresses,
       user,
-      userDetails,
       orderDetails,
       currentPage: page,
       totalPages: totalPages,
@@ -1341,75 +1351,7 @@ const resetPasswordPost = async (req, res) => {
   }
 }
 
-const razorpayVerify = async (req, res) => {
-  try {
-    console.log("VERIFY EYE/////////////////////////////");
-    const body =
-      req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id;
-    console.log(body);
 
-    const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_SECRET)
-      .update(body.toString())
-      .digest("hex");
-
-    if (expectedSignature === req.body.razorpay_signature) {
-      console.log("Corrected Verify");
-
-      // Find the previously stored record using orderId
-      const updatedOrder = await orderModel.findOneAndUpdate(
-        { oId: req.body.razorpay_order_id },
-        {
-          // paymentId: req.body.razorpay_payment_id,
-          // signature: req.body.razorpay_signature,
-          paymentStatus: "Success",
-        },
-        { new: true }
-      );
-      console.log(updatedOrder);
-      if (updatedOrder) {
-        const cart = await cartModel.findOne({ owner: req.session.userId });
-        // Remove selected items from the cart
-        cart.items = [];
-        cart.billTotal = 0;
-        await cart.save();
-        // Render the payment success page
-        return res.json({
-          success: true,
-          message: "Order Sucessfully",
-          updatedOrder,
-        });
-      } else {
-        // Handle the case where the order couldn't be updated
-        return res.json({
-          success: false,
-          message: "Order Failed Please try Again",
-        });
-      }
-    } else {
-      // Handle the case where the signature does not match
-      return res.json({
-        success: false,
-        message: "Order Failed Please try Again",
-      });
-    }
-  } catch (err) {
-    console.log(err);
-    // Handle errors
-    return res.render("paymentFailed", {
-      title: "Error",
-      error: "An error occurred during payment verification",
-    });
-  }
-};
-
-let razorpayFailed = async (req, res) => {
-  try {
-    res.status(200).render("paymentFailed");
-  } catch (err) {
-    console.log(err);
-  }
-};
 
 
 const returnOrder = async (req, res) => {
@@ -1543,7 +1485,6 @@ const createuserReferral = async (req, res) => {
     await user.save();
 
     console.log(newReferrer);
-
     // Assuming generatedRefLink should be the referral link
     const generatedRefLink = `${req.protocol}://${req.headers.host}/register?reflink=${newReferrer.referralLink}`
     res.status(200).json({
@@ -1587,8 +1528,6 @@ module.exports = {
   changePassword,
   resetPasswordGet,
   resetPasswordPost,
-  razorpayVerify,
-  razorpayFailed,
   returnOrder,
   createuserReferral,
   // downloadInvoice,  

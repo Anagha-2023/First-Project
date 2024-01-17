@@ -24,18 +24,18 @@ const userSchema = new Schema({
   pincodeOrZip: Number,
 });
 
-userSchema.pre('save', async function (next) {
-  const user = this;
-  if (!user.isModified('password')) return next();
+// userSchema.pre('save', async function (next) {
+//   const user = this;
+//   if (!user.isModified('password')) return next();
 
-  try {
-    const hashedPassword = await bcrypt.hash(user.password, 10);
-    user.password = hashedPassword;
-    next();
-  } catch (error) {
-    return next(error);
-  }
-});
+//   try {
+//     const hashedPassword = await bcrypt.hash(user.password, 10);
+//     user.password = hashedPassword;
+//     next();
+//   } catch (error) {
+//     return next(error);
+//   }
+// });
 
 let model = mongoose.model('User', userSchema);
 

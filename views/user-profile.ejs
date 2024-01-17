@@ -762,7 +762,7 @@
                                                 <div>
                                                     <h5>Invite & Earn</h5>
                                                     <span class="earn-text">Be a trendsetter! Introduce your circle to
-                                                        the next big thing, INLOOP. <br> Your influence, your
+                                                        the next big thing, HomeWorld. <br> Your influence, your
                                                         rewards</span>
                                                 </div>
 
@@ -1534,7 +1534,7 @@
                                     
                                                     <div class="btn-group text-center">
                                                         <button type="button" class="btn btn-outline-light"
-                                                            onclick="addMoneyToWallet('<%= userDetails._id %>')">Add Money</button>
+                                                            onclick="addMoneyToWallet('<%= user._id %>')">Add Money</button>
                                                         <button
                                                             onclick="showWithdrawalPrompt('<%= wallet ? wallet.balance : 0 %>')"
                                                             class="btn btn-outline-light">Withdraw</button>
@@ -1577,7 +1577,7 @@
                                                     <div class="btn-group text-center">
                                                         <button type="button"
                                                             class="btn bg-light text-brand btn-outline-light"
-                                                            onclick="addMoneyToWallet('<%= userDetails._id %>')">Add
+                                                            onclick="addMoneyToWallet('<%= user._id %>')">Add
                                                             Money</button>
                                                         <button
                                                             onclick="showWithdrawalPrompt('<%= wallet ? wallet.balance : 0 %>')"
@@ -1805,6 +1805,7 @@
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="path/to/elevatezoom/jquery.elevateZoom-3.0.8.min.js"></script>
 
     <!-- Vendor JS-->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -2367,6 +2368,18 @@
                 }
             });
         }
+
+        $(document).ready(function () {
+            $("#copyButton").on("click", function () {
+                // Select the text in the input field
+                var copyText = document.getElementById("refLink");
+                copyText.select();
+                copyText.setSelectionRange(0, 99999); // For mobile devices
+
+                // Copy the selected text to the clipboard
+                document.execCommand("copy");
+            });
+        });
 
         
 
