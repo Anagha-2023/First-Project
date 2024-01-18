@@ -11,9 +11,6 @@ let userName, userEmail;
 
 router.get('/', isAuthenticated, usersController.home)
 
-
-
-
 router.get('/login', usersController.loginpage)
 
 router.post('/login', usersController.loginpost)
@@ -81,7 +78,7 @@ router.post('/create-razorpay-order', isAuthenticated,wallet.WalletRazorpayCreat
 router.post('/confirm-payment', isAuthenticated,wallet.WalletConfirmPayment)
 router.post('/withdraw', isAuthenticated,wallet.withdrawMoney)
 
-// router.get('/order-details/downloadInvoice/:orderId',isAuthenticated,usersController.downloadInvoice)
+router.get('/order-details/downloadInvoice/:orderId',isAuthenticated,usersController.downloadInvoice)
 
 router.get('/refer',isAuthenticated,usersController.createuserReferral)
 

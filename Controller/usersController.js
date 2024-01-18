@@ -8,6 +8,8 @@ const mongoose = require('mongoose');
 const Referral = require('../models/referralSchema');
 const uuidv4 = require('uuid').v4;
 require("dotenv").config();
+const easyinvoice = require('easyinvoice');
+
 
 const CategoryModel = require("../models/category");
 const { productModel } = require("../models/product");
@@ -109,9 +111,12 @@ let home = async (req, res) => {
 
 
 const getSignup = (req, res) => {
+  if(req.query.reflink){
+    console.log('l,,kmknmjnjnjnjlkkkn');
+          req.session.reflink= req.query.reflink;
+        }
   res.render('userSignup');
 }
-
 
 const signuppost = async (req, res) => {
   try {
@@ -229,52 +234,6 @@ const loginpost = async (req, res) => {
   }
 };
 
-
-
-
-
-
-// const loginpost = async (req, res) => {
-//   const { email, password } = req.body;
-//   console.log(req.body);
-
-//   try {
-//     console.log(UserModel);
-
-//     let user = await UserModel.findOne({ email: email });
-
-
-//     console.log(user);
-//     if (user) {
-//       const passwordMatch = await bcrypt.compare(password, user.password)
-
-
-//       if (user && passwordMatch) {
-//         console.log(user.status + "   before");
-//         user.status = true;
-//         await user.save();
-//         console.log(user.status + "    after");
-
-//         userName = user.name;
-//         userEmail = user.email;
-//         console.log(userName);
-//         req.session.user = true;
-//         req.session.userDelete = false;
-
-//         res.status(200);
-//         res.redirect('/');
-//       }if(user.isBlocked){
-//         req.session.isBlocked = true;
-//         res.redirect('/login')
-//    }
-//     } else {
-//       res.render('index', { errorMessage: 'Enter Valid Username or Password' });
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('Internal Server Error');
-//   }
-// };
 
 
 
@@ -576,7 +535,7 @@ const postVerifyOtp = async (req, res, next) => {
               referralLink: uuidv4(),
               userId: newUser.id,
             });
-
+            console.log(newReferrer,";;;;;;;;;;;;;;;;;;;;;;;;;;;;");
             newReferrer.save();
 
             newUser.refId = newReferrer._id;
@@ -593,62 +552,29 @@ const postVerifyOtp = async (req, res, next) => {
 
             // Save the updated user
             await newUser.save();
+            console.log(newUser,"beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
 
             if (req.session.reflink) {
               try {
-                const referrer = await Referral.aggregate([
-                  {
-                    $match: {
-                      referralLink: req.session.reflink,
-                    },
-                  },
-                  {
-                    $lookup: {
-                      from: 'users',
-                      localField: 'userId',
-                      foreignField: '_id',
-                      as: 'user',
-                    },
-                  },
-                  {
-                    $unwind: '$user',
-                  },
-                  {
-                    $lookup: {
-                      from: 'wallets',
-                      localField: 'user.wallet',
-                      foreignField: '_id',
-                      as: 'wallet',
-                    },
-                  },
-                  {
-                    $unwind: '$wallet',
-                  },
-                  {
-                    $project: {
-                      userId: '$user.id',
-                      wallet: '$wallet',
-                    },
-                  },
+                const referal = await Referral.findOne({referralLink:req.session.reflink})
+                const wallet = await Wallet.findOne({user:referal.userId})
 
-                ]);
+                console.log(wallet,"reeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
 
-                console.log(referrer);
-
-                if (referrer.length > 0) {
+                if (wallet) {
                   const referralAmount = 500;
                   const referralBonus = referralAmount * 0.5;
 
                   // Updating the referrer's wallet with the referral bonus
-                  referrer[0].wallet.balance += referralBonus;
-                  referrer[0].wallet.transactions.push({
+                  wallet.balance += referralAmount;
+                  wallet.transactions.push({
                     amount: referralAmount,
                     type: 'credit',
                     description: 'Referral Bonus',
                   });
 
                   // Save the changes to the referrer's wallet
-                  await Wallet.findByIdAndUpdate(referrer[0].wallet._id, referrer[0].wallet);
+                  await wallet.save()
 
                   // Updating the new user's wallet with the referral bonus
                   newWallet.balance += referralBonus;
@@ -1394,76 +1320,77 @@ const returnOrder = async (req, res) => {
   }
 }
 
-// const downloadInvoice = async (req, res) => {
-//   try {
-//     // if (req.query.from === '$2b$10$gviVtGpDfqpsAsCkbx8xaukeIQDirbAk2vIJ0IhJROGzYHeHUERp2') {
+const downloadInvoice = async (req, res) => {
+  try {
+    // if (req.query.from === '$2b$10$gviVtGpDfqpsAsCkbx8xaukeIQDirbAk2vIJ0IhJROGzYHeHUERp2') {
 
-//     let order = await orderModel.findById(req.params.orderId)
-//     let user = await UserModel.findById(order.user)
+    let order = await orderModel.findById(req.params.orderId)
+    let user = await UserModel.findById(order.user)
 
-//     console.log("innn")
-//     console.log(order, order ?.items);
-//     let products = order.items.map((item, index) => {
-//       return {
-//         "quantity": item.quantity,
-//         "price": item.productPrice,
-//         "tax-rate": 0.0,
-//         "description": item.name,
-//       }
-//     });
+    console.log("innn")
+    console.log(order, order ?.items);
+    let products = order.items.map((item, index) => {
+      return {
+        "quantity": item.quantity,
+        "price": item.productPrice,
+        "tax-rate": 0.0,
+        "description": item.name,
+      }
+    });
 
 
-//     var data = {
-//       "customize": {},
-//       "images": {
-//         "logo": "https://public.easyinvoice.cloud/img/logo_en_original.png",
-//         // "background": "https://public.easyinvoice.cloud/img/watermark-draft.jpg"
-//       },
-//       "sender": {
-//         "company": "Homeworld",
-//         "address": "Home world Decors",
-//         "zip": "680502",
-//         "city": "Thrissur",
-//         "country": "INDIA"
-//       },
-//       "client": {
-//         "company": user ?.name || "N/A",
-//         "address": user.email,
-//         "city": order.deliveryAddress.city,
-//         "zip": "PIN :" + order.deliveryAddress.pincode,
-//         "phone": user.phone,
-//         "country": order.deliveryAddress.Country,
-//       },
-//       "information": {
-//         "number": user.phone,
-//         "date": order.orderDate,
-//         "due-date": "PAID"
-//       },
-//       "products": products,
-//       "bottom-notice": "Thank you for supporting us, Inloop Watches",
-//       "settings": {
-//         "currency": "INR",
-//       },
-//       "translate": {},
-//     };
-//     easyinvoice.createInvoice(data, function (result) {
-//       const base64Data = result.pdf;
-//       res.setHeader('Content-Type', 'application/pdf');
-//       res.setHeader('Content-Disposition', 'attachment; filename="INVOICE_' + Date.now() + '_.pdf"');
-//       const binaryData = Buffer.from(base64Data, 'base64');
-//       res.send(binaryData);
-//     });
-//     // } 
-//     // else {
-//     //     res.redirect('/profile')
-//     // }
+    var data = {
+      "customize": {},
+      "images": {
+        "logo": "https://public.easyinvoice.cloud/img/logo_en_original.png",
+        // "background": "https://public.easyinvoice.cloud/img/watermark-draft.jpg"
+      },
+      "sender": {
+        "company": "Homeworld",
+        "address": "Home world Decors",
+        "zip": "680502",
+        "city": "Thrissur",
+        "country": "INDIA"
+      },
+      "client": {
+        "company": user ?.name || "N/A",
+        "address": user.email,
+        "city": order.deliveryAddress.city,
+        "zip": "PIN :" + order.deliveryAddress.pincode,
+        "phone": user.phone,
+        "country": order.deliveryAddress.Country,
+      },
+      "information": {
+        "number": user.phone,
+        "date": order.orderDate,
+        "due-date": "PAID"
+      },
+      "products": products,
+      "bottom-notice": "Thank you for supporting us,  Watches",
+      "settings": {
+        "currency": "INR",
+      },
+      "translate": {},
+    };
+    easyinvoice.createInvoice(data, function (result) {
+      const base64Data = result.pdf;
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="INVOICE_' + Date.now() + '_.pdf"');
+      const binaryData = Buffer.from(base64Data, 'base64');
+      res.send(binaryData);
+    });
+    // } 
+    // else {
+    //     res.redirect('/profile')
+    // }
 
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('Error generating the PDF');
-//   }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error generating the PDF');
+  }
 
-// }
+}
+
 const createuserReferral = async (req, res) => {
   try {
     const user = await UserModel.findById(req.session.user.id);
@@ -1530,6 +1457,6 @@ module.exports = {
   resetPasswordPost,
   returnOrder,
   createuserReferral,
-  // downloadInvoice,  
+  downloadInvoice,  
 
 };

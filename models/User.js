@@ -20,6 +20,10 @@ const userSchema = new Schema({
     postalCode: String,
     country: String,
   },
+  wallet: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Wallet', // Reference to the 'Wallet' model
+},
   stateOrCity: String,
   pincodeOrZip: Number,
 });
