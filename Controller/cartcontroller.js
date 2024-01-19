@@ -244,18 +244,7 @@ const cartRemove = async (req, res) => {
         .json({ success: false, message: "Cart Not Found" });
     }
 
-    //  const productIndex = cart.items.findIndex((item) => item.productId.toString() === productId);
-
-    //  if(productIndex === -1){
-    //      return res.status(404).json({success:false,message:'Product not found'})
-    //  }
-
-    // / Check if the removed item was selected and adjust the billTotal
-    //  if (cart.items[productIndex].selected) {
-    //      cart.billTotal -= cart.items[productIndex].price;
-    //  }
-
-    //  cart.items.splice(productIndex,1);
+    
 
     cart.items.find((item) => {
       if (item.productId + "" === productId + "") {
