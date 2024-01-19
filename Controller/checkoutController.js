@@ -451,27 +451,24 @@ let orderCheckoutPost = async (req, res, next) => {
 
 
     } else if (req.body.paymentOption === "Wallet") {
-
       const wallet = await WalletModel.findOne({ user: req.session.user.id });
-      console.log(wallet,"????????????????????????????????????????????????????????????????????????");
 
       if (!wallet) {
         return res.status(404).json({ success: false, msg: 'Wallet not found for the user' });
       }
 
-
       if (req.session.discountedTotal && req.session.discountAmount && req.session.discountAmount != null && req.session.discountedTotal != null) {
-        billTotal = req.session.discountedTotal
+        billTotal = req.session.discountedTotal;
 
         const coupon = await couponModel.findOne({ code: req.session.couponCode });
         coupon.usersUsed.push(req.session.user.id);
         await coupon.save();
         req.session.couponId = coupon._id;
-
       }
 
       // Check if the wallet balance is sufficient
       if (wallet.balance < billTotal) {
+        // Insufficient funds in the wallet
         return res.status(400).json({ success: false, msg: 'Insufficient funds in the wallet' });
       }
       // Deduct the billTotal from the wallet balance

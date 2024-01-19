@@ -10,7 +10,7 @@ const Order = require('../Controller/admin-orderManagement-controller')
 const coupons = require('../Controller/couponController')
 
 
-let admiN;
+
 
 router.get('/order-management',isAdmin,Order.OrderManagementPageGet);
 router.delete('/order-management/deleteOrder/:orderId',isAdmin,Order.OrderDelete)
@@ -60,7 +60,9 @@ router.post('/createCoupon',isAdmin,coupons.couponCreate);
 router.post('/coupon/update-status/:Id',isAdmin,coupons.couponUpdate);
 router.post('/EditCoupon/:Id',isAdmin,coupons.couponEdit)
 
+router.get('/pdf',adminController.downloadPdf)
 
+router.get('/excel', adminController.generateExcel)
 
 
 router.get('/admin/login',adminController.logout)

@@ -6,10 +6,157 @@ const admin = require("../routes/admin")
 const UserModel = require("../models/User");
 const mongoose = require("mongoose");
 const nocache = require('nocache')
-
+const { productModel } = require("../models/product");
+const orderModel = require('../models/orderSchema')
+const PDFDocument = require('pdfkit');
+const ExcelJS = require('exceljs');
 
 
 let admiN;
+
+
+async function salesReport(date) {
+  const currentDate = new Date();
+  let orders = [];
+
+  for (let i = 0; i < date; i++) {
+    const startDate = new Date(currentDate);
+    startDate.setDate(currentDate.getDate() - i);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(currentDate);
+    endDate.setDate(currentDate.getDate() - i);
+    endDate.setHours(23, 59, 59, 999);  
+
+    const dailyOrders = await orderModel.find({
+      status: "Delivered",
+      orderDate: {
+        $gte: startDate,
+        $lt: endDate,
+      },
+    });
+
+    orders = [...orders, ...dailyOrders];
+  }
+
+  let users = await UserModel.countDocuments();
+  // console.log(orders, "orders function inside");
+
+  let totalRevenue = 0;
+  orders.forEach((order) => {
+    totalRevenue += order.billTotal;
+  });
+
+  let totalOrderCount = await orderModel.find({
+    status: "Delivered",
+  });
+
+  let Revenue = 0;
+  totalOrderCount.forEach((order) => {
+    Revenue += order.billTotal;
+  });
+
+  let stock = await productModel.find();
+  let totalCountInStock = 0;
+  stock.forEach((product) => {
+    totalCountInStock += product.countInStock;
+  });
+
+  let averageSales = orders.length / date; // Fix the average calculation
+  let averageRevenue = totalRevenue / date; // Fix the average calculation
+
+  return {
+    users,
+    totalOrders: orders.length,
+    totalRevenue,
+    totalOrderCount: totalOrderCount.length,
+    totalCountInStock,
+    averageSales,
+    averageRevenue,
+    Revenue,
+  };
+}
+
+const downloadPdf = async (req, res) => {
+  try {
+    // Obtain the sales data for the desired period (e.g., daily)
+    let salesData = null; // Change the parameter based on the desired period
+
+    if (req.query.type === 'daily') {
+      salesData = await salesReport(1);
+    } else if (req.query.type === 'weekly') {
+      salesData = await salesReport(7);
+    } else if (req.query.type === 'monthly') {
+      salesData = await salesReport(30);
+    } else if (req.query.type === 'yearly') {
+      salesData = await salesReport(365);
+    }
+
+    let doc = new PDFDocument();
+
+    // Set response headers for the PDF file
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="sales_report.pdf"');
+
+    // Pipe the PDF content to the response
+    doc.pipe(res);
+
+    // Add content to the PDF
+    doc.fontSize(20).text('Sales Report', { align: 'center' });
+
+    // Insert sales data into the PDF
+    if (salesData) {
+      doc.fontSize(12).text(`Total Revenue: INR ${salesData.totalRevenue}`);
+      doc.text(`Total Orders: ${salesData.totalOrders}`);
+      doc.text(`Total Order Count: ${salesData.totalOrderCount}`);
+      doc.text(`Total Count In Stock: ${salesData.totalCountInStock}`);
+      doc.text(`Average Sales: ${salesData.averageSales ? salesData.averageSales.toFixed(2) : 'N/A'}%`);
+      doc.text(`Average Revenue: ${salesData.averageRevenue ? salesData.averageRevenue.toFixed(2) : 'N/A'}%`);
+    } else {
+      doc.text('No sales data available.');
+    }
+
+    // End the document and send it to the client
+    doc.end();
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send('Error generating PDF.');
+  }
+};
+
+
+const generateExcel = async (req, res, next) => {
+  try {
+    const salesDatas = await salesReport(0);
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sales Report');
+
+    worksheet.columns = [
+      { header: 'Total Revenue', key: 'totalRevenue', width: 15 },
+      { header: 'Total Orders', key: 'totalOrders', width: 15 },
+      { header: 'Total Count In Stock', key: 'totalCountInStock', width: 15 },
+      { header: 'Average Sales', key: 'averageSales', width: 15 },
+      { header: 'Average Revenue', key: 'averageRevenue', width: 15 },
+      { header: 'Revenue', key: 'Revenue', width: 15 },
+    ];
+
+    worksheet.addRow({
+      totalRevenue: salesDatas.totalRevenue,
+      totalOrders: salesDatas.totalOrders,
+      totalCountInStock: salesDatas.totalCountInStock,
+      averageSales: salesDatas.averageSales ? salesDatas.averageSales.toFixed(2) : 'N/A',
+      averageRevenue: salesDatas.averageRevenue ? salesDatas.averageRevenue.toFixed(2) : 'N/A',
+      Revenue: salesDatas.Revenue,
+    });
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="sales_report.xlsx"');
+
+    workbook.xlsx.write(res).then(() => res.end());
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send('Error generating Excel file.');
+  }
+};
 
 const adminlogin = (req, res) => {
   if (req.session.isAdmin) {
@@ -46,8 +193,24 @@ const adminpost = async (req, res) => {
   }
 };
 
-const adminhome = (req, res) => {
-  res.render("adminHome", { admiN });
+let adminhome = async (req, res) => {
+  if (req.session.isAdmin) {
+    req.session.isAdmin = true;
+
+    let orders = await orderModel.find().sort({ createdAt: -1 }).limit(10).populate('user', 'name')
+    
+    let daily = await salesReport(1)
+    let weekly = await salesReport(7);
+    let monthly = await salesReport(30);
+    let yearly = await salesReport(365)
+
+    console.log("D:",daily,"W:",weekly,"M:",monthly,"Y:",yearly)
+    let allProductsCount = await productModel.countDocuments();
+
+    res.render("adminHome",{daily,weekly,monthly,yearly,orders,allProductsCount});
+  } else {
+    res.redirect("/admin/login");
+  }
 };
 
 const adminusers = async (req, res) => {
@@ -267,11 +430,13 @@ const logout = (req, res) => {
 module.exports = {
   adminlogin,
   adminpost,
+  generateExcel,
   adminhome,
   adminlogout,
   adminusers,
   userdelete,
   useradd,
+  downloadPdf,
   useraddpost,
   userupdate,
   updatepost,
