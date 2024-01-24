@@ -16,65 +16,83 @@ let admiN;
 
 
 async function salesReport(date) {
-  const currentDate = new Date();
-  let orders = [];
+  try {
+      const currentDate = new Date();
+      let orders = [];
 
-  for (let i = 0; i < date; i++) {
-    const startDate = new Date(currentDate);
-    startDate.setDate(currentDate.getDate() - i);
-    startDate.setHours(0, 0, 0, 0);
-    const endDate = new Date(currentDate);
-    endDate.setDate(currentDate.getDate() - i);
-    endDate.setHours(23, 59, 59, 999);  
+      for (let i = 0; i < date; i++) {
+          const startDate = new Date(currentDate);
+          startDate.setDate(currentDate.getDate() - i);
+          startDate.setHours(0, 0, 0, 0);
+          const endDate = new Date(currentDate);
+          endDate.setDate(currentDate.getDate() - i);
+          endDate.setHours(23, 59, 59, 999);
 
-    const dailyOrders = await orderModel.find({
-      status: "Delivered",
-      orderDate: {
-        $gte: startDate,
-        $lt: endDate,
-      },
-    });
+          const dailyOrders = await orderModel.find({
+              status: "Delivered",
+              orderDate: {
+                  $gte: startDate,
+                  $lt: endDate,
+              },
+          }).catch(error => {
+              console.error("Error fetching daily orders:", error);
+              throw error;
+          });
 
-    orders = [...orders, ...dailyOrders];
+          orders = [...orders, ...dailyOrders];
+      }
+
+      const users = await UserModel.countDocuments().catch(error => {
+          console.error("Error fetching user count:", error);
+          throw error;
+      });
+
+      let totalRevenue = 0;
+      orders.forEach((order) => {
+          totalRevenue += order.billTotal;
+      });
+
+      const totalOrderCount = await orderModel.find({
+          status: "Delivered",
+      }).catch(error => {
+          console.error("Error fetching total order count:", error);
+          throw error;
+      });
+
+      let Revenue = 0;
+      totalOrderCount.forEach((order) => {
+          Revenue += order.billTotal;
+      });
+
+      const stock = await productModel.find().catch(error => {
+          console.error("Error fetching product stock:", error);
+          throw error;
+      });
+
+      let totalCountInStock = 0;
+      stock.forEach((product) => {
+          totalCountInStock += product.countInStock;
+      });
+
+      const averageSales = orders.length / date;
+      const averageRevenue = totalRevenue / date;
+
+      return {
+          users,
+          totalOrders: orders.length,
+          totalRevenue,
+          totalOrderCount: totalOrderCount.length,
+          totalCountInStock,
+          averageSales,
+          averageRevenue,
+          Revenue,
+      };
+  } catch (error) {
+      console.error("Error in salesReport function:", error);
+      throw error;
   }
-
-  let users = await UserModel.countDocuments();
-  // console.log(orders, "orders function inside");
-
-  let totalRevenue = 0;
-  orders.forEach((order) => {
-    totalRevenue += order.billTotal;
-  });
-
-  let totalOrderCount = await orderModel.find({
-    status: "Delivered",
-  });
-
-  let Revenue = 0;
-  totalOrderCount.forEach((order) => {
-    Revenue += order.billTotal;
-  });
-
-  let stock = await productModel.find();
-  let totalCountInStock = 0;
-  stock.forEach((product) => {
-    totalCountInStock += product.countInStock;
-  });
-
-  let averageSales = orders.length / date; // Fix the average calculation
-  let averageRevenue = totalRevenue / date; // Fix the average calculation
-
-  return {
-    users,
-    totalOrders: orders.length,
-    totalRevenue,
-    totalOrderCount: totalOrderCount.length,
-    totalCountInStock,
-    averageSales,
-    averageRevenue,
-    Revenue,
-  };
 }
+
 
 const downloadPdf = async (req, res) => {
   try {

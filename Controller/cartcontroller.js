@@ -18,16 +18,16 @@ const userCart = async (req, res) => {
     const userId = req.session.user.id;
     // console.log(userId,".................................");
     const category = await CategoryModel.find();
-    console.log(userId);
-    const cart = await cartModel.findOne({ owner: new ObjectId(userId) });
-    console.log(cart);
+    console.log(new ObjectId(userId));
+    const cart = await cartModel.findOne({owner:new mongoose.Types.ObjectId(userId)})
+    console.log(cart,'qip');
     if (cart) {
       for (const item of cart.items) {
         let data = await productModel.findById(item.productId);
         item.data = data;
       }
 
-      const user = await UserModel.findOne({
+      const user = await UserModel.find({
         _id: new mongoose.Types.ObjectId(userId),
       });
 

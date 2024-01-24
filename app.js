@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const createError = require('http-errors');
 const express = require('express');
 const session = require('express-session');
@@ -6,11 +8,11 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
-require('dotenv').config();
+// require('dotenv')
 
-mongoose.connect('mongodb://127.0.0.1:27017/CRUD', {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true,
+  // useUnifiedTopology: true,
 });
 
 const db = mongoose.connection;

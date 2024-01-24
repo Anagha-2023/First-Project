@@ -14,30 +14,26 @@
         </div>
         <nav>
             <ul class="menu-aside">
-                <li class="menu-item active">
+                <li class="menu-item ">
                     <a class="menu-link" href="/admin"> <i class="icon material-icons md-home"></i>
                         <span class="text">Dashboard</span>
                     </a>
                 </li>
-                <li class="menu-item">
+                <li class="menu-item active">
                     <a class="menu-link" href="/admin/usermanagement"> <i class="icon material-icons md-person"></i>
                         <span class="text">User Management</span>
                     </a>
                 </li>
-
-                <li class="menu-item">
-                    <a class="menu-link" href="/admin/product-management"> <i
-                            class="icon material-icons md-shopping_bag"></i>
-                        <span class="text">Product Management</span>
+                <li class="menu-item has-submenu ">
+                    <a class="menu-link" href=""> <i class="icon material-icons md-shopping_bag"></i>
+                        <span class="text">Products</span>
                     </a>
-                </li>
-
-                <li class="menu-item">
-                    <a class="menu-link" href="/admin/category-management"> <i
-                            class="icon material-icons md-category "></i>
-
-                        <span class="text">Category Management</span>
-                    </a>
+                    <div class="submenu ">
+                        <a href="/admin/product-management">Product List</a>
+                        <!-- <a href="page-products-grid.html">Product grid</a>
+                     <a href="page-products-grid-2.html">Product grid 2</a> -->
+                        <a href="/admin/category-management">Categories</a>
+                    </div>
                 </li>
 
                 <li class="menu-item ">
@@ -52,9 +48,11 @@
                         <span class="text">Coupon Management</span>
                     </a>
                 </li>
-                
+
+
             </ul>
-            
+            <hr>
+
             <br>
             <br>
         </nav>
@@ -62,12 +60,12 @@
 
     <main class="main-wrap">
         <header class="main-header navbar">
-            
+
             <div class="col-nav ms-auto">
                 <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i
                         class="material-icons md-apps"></i> </button>
                 <ul class="nav">
-                    
+
                     <li class="nav-item">
                         <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i>
                         </a>
@@ -89,7 +87,7 @@
 
 
 
-                
+
             </div>
             <div class="row">
                 <div class="col-lg-3">
@@ -100,7 +98,7 @@
                             <div class="text">
                                 <h6 class="mb-1 card-title">Revenue</h6>
                                 <span>INR <%= daily.totalRevenue.toFixed(2) %></span>
-                                
+
                             </div>
                         </article>
                     </div>
@@ -114,7 +112,7 @@
                                 <h6 class="mb-1 card-title">Orders</h6> <span>
                                     <%= daily.totalOrders %>
                                 </span>
-                                
+
                             </div>
                         </article>
                     </div>
@@ -174,7 +172,7 @@
                     <div class="card mb-4">
                         <article class="card-body">
                             <h5 class="card-title">Sale statistics</h5>
-                            <canvas id="myChart" height="100px"></canvas>
+                            <canvas id="myChart" height="150px"></canvas>
                         </article>
                     </div>
 
@@ -186,7 +184,7 @@
                     <h4 class="card-title">Orders</h4>
                     <div class="row align-items-center">
 
-                        
+
                     </div>
                 </header>
                 <div class="card-body">
@@ -217,7 +215,7 @@
                                         <% orders.forEach((order, index)=> { %>
                                             <tr>
                                                 <td class="text-center">
-                                                    
+
                                                 </td>
                                                 <td><a href="/admin/order-management/orderDetailedView/<%= order._id %>"
                                                         class="fw-bold">#<%= order.oId %></a></td>
@@ -261,12 +259,14 @@
                     </div> <!-- table-responsive end// -->
                 </div>
             </div>
-            
-        </section> <!-- content-main end// -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js">
 
-        </script>
+        </section> <!-- content-main end// -->
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+
+
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 function decodeHtmlEntities(text) {
