@@ -214,22 +214,69 @@ const adminpost = async (req, res) => {
 let adminhome = async (req, res) => {
   if (req.session.isAdmin) {
     req.session.isAdmin = true;
-
-    let orders = await orderModel.find().sort({ createdAt: -1 }).limit(10).populate('user', 'name')
     
-    let daily = await salesReport(1)
-    let weekly = await salesReport(7);
-    let monthly = await salesReport(30);
-    let yearly = await salesReport(365)
+    let product = await productModel.find()
+    let orders = await orderModel.find().sort({ createdAt: -1 }).limit(10).populate('user', 'name');
+    
+    const salesReportData = await fetchSalesReport();
 
-    console.log("D:",daily,"W:",weekly,"M:",monthly,"Y:",yearly)
+      const daily = await salesReport(1); // Assuming you want daily data
+      const weekly = await salesReport(7);
+      const monthly = await salesReport(30);
+      const yearly = await salesReport(365);
+
+    let fullSalesData = await salesReport(365); // Assuming you want data for the past 365 days
+
+    // Extract data from the full sales report
+    let totalOrders = monthly.totalOrders;
+    let averageSales = monthly.averageSales;
+    let averageRevenue = monthly.averageRevenue;
+
+    console.log(monthly.totalOrders, "////////////////////////////");
+    console.log(monthly.Revenue, "////////////////////////////");
+    console.log("Full Sales Data:", fullSalesData);
     let allProductsCount = await productModel.countDocuments();
 
-    res.render("adminHome",{daily,weekly,monthly,yearly,orders,allProductsCount});
+    res.render("adminHome", { daily, weekly, monthly, yearly, fullSalesData, orders, product, allProductsCount, totalOrders, averageSales, averageRevenue, salesReportData});
   } else {
     res.redirect("/admin/login");
   }
 };
+
+const fetchSalesReport = async () => {
+  try {
+    // Fetch all orders with status "Delivered"
+    const orders = await orderModel.find({ status: "Delivered" }).populate('user', 'name');
+
+    // Prepare the sales report data
+    const salesReportData = orders.map(async order => {
+      return order.items.map(async item => {
+        const product = await productModel.findById(item.productId);
+        if (order.user) { // Check if order.user exists
+          return {
+            productName: product.productName,
+            totalStock: product.countInStock,
+            remainingStock: product.countInStock - item.quantity,
+            customerName: order.user.name,
+            totalRevenue: order.billTotal
+          };
+        } else {
+          return null; // Return null if order.user does not exist
+        }
+      });
+    });
+
+    // Flatten the array of arrays and await all promises
+    return (await Promise.all(salesReportData.flat())).filter(Boolean); // Remove any undefined values
+  } catch (error) {
+    console.error("Error fetching sales report:", error);
+    throw error;
+  }
+};
+
+
+
+
 
 const adminusers = async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Get the requested page from query parameters

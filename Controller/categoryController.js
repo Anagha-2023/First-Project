@@ -61,11 +61,6 @@ const categoryManagementCreate = async (req, res) => {
     }
 };
 
-
-
-
-
-
 const categoryManagementEdit = async (req, res) => {
     try {
         let { editName, editDescription } = req.body;
@@ -78,21 +73,15 @@ const categoryManagementEdit = async (req, res) => {
         const category = await CategoryModel.findById(categoryId);
 
         if (!category) {
-            return res.status(404).json({ message: 'Category not found' });
+            return res.status(404).json({ error: 'Category not found' }); // Return error in JSON format
         }
 
         // Check if a category with the same name (case-insensitive) already exists
         const existingCategory = await CategoryModel.findOne({ name: { $regex: new RegExp(`^${editName}$`, 'i') } });
 
         if (existingCategory && existingCategory._id.toString() !== categoryId) {
-            // Pass the error message to the modal template
-            return res.render('category', {
-                pagetitle: 'Category',
-                categories: [],
-                currentPage: page,
-                totalPages: 0,
-                error: 'Category with the same name already exists.'
-            });
+            // Pass the error message as JSON response
+            return res.status(400).json({ error: 'Category with the same name already exists.' });
         }
 
         // Update name and description
@@ -115,7 +104,9 @@ const categoryManagementEdit = async (req, res) => {
             .skip((page - 1) * limit)
             .limit(limit);
 
-        res.render('category', {
+        res.json({
+            success: true,
+            message: 'Category updated successfully.', // Provide a success message
             pagetitle: 'Category',
             categories: categories,
             currentPage: page,
@@ -123,16 +114,9 @@ const categoryManagementEdit = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
-
-
-
-
-
-
-
 
 const categoryManagementFeatured = async (req, res) => {
     try {

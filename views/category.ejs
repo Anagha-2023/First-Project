@@ -242,19 +242,19 @@
                                        aria-label="Close"></button>
                                  </div>
                                  <div class="modal-body">
-
+         
                                     <% if (error) { %>
                                        <div class="alert alert-danger" role="alert">
                                            <%= error %>
                                        </div>
-                                   <% } %>
-         
-                                          
+                                       <% } %> 
 
                                     <!-- Your edit form goes here -->
                                     <form action="category-management/edit-category/<%= category._id %>"
                                        enctype="multipart/form-data" method="post">
                                        <!-- Image Upload Section -->
+
+                                       
 
                                        <div class="mb-3">
                                           <label for="editName" class="form-label">Category Name</label>
@@ -282,7 +282,10 @@
                                        <div class="modal-footer">
                                           <button type="button" class="btn btn-secondary"
                                              data-bs-dismiss="modal">Close</button>
-                                          <button type="submit" class="btn btn-primary">Save Changes</button>
+                                             <button type="button" class="btn btn-primary"
+                                             onclick="submitEditForm(document.getElementById('editForm<%= category._id %>'), '<%= category._id %>')">Save Changes</button>
+                                         
+
                                        </div>
                                     </form>
                                  </div>
@@ -467,6 +470,43 @@
             }
          });
       </script>
+
+<script>
+   async function submitEditForm(form, categoryId) {
+       // Get the form data
+       const formData = new FormData(form);
+
+       // Make a fetch request to submit the form data
+       const response = await fetch(`/category-management/edit/${categoryId}`, {
+           method: 'POST',
+           body: formData
+       });
+
+       if (response.ok) {
+           // If the response is successful, reload the page or handle success as required
+           window.location.reload();
+       } else {
+           // If there's an error, get the error message from the response
+           const errorMessage = await response.json();
+           
+           // Get the modal element
+           const modal = document.getElementById(`editModal${categoryId}`);
+
+           // Insert the error message at the top of the modal
+           const errorDiv = document.createElement('div');
+           errorDiv.className = 'alert alert-danger';
+           errorDiv.textContent = errorMessage.error; // Assuming the error message is returned in the JSON response
+           modal.querySelector('.modal-body').insertBefore(errorDiv, modal.querySelector('.modal-body').firstChild);
+
+           // Show the modal
+           const bootstrapModal = new bootstrap.Modal(modal);
+           bootstrapModal.show();
+       }
+   }
+</script>
+
+
+
 
       <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 

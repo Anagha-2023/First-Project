@@ -48,16 +48,16 @@ body{margin: 0;
         border-bottom: 2px solid #262626;
         outline: none;
         height: 40px;
-        color: #fff;
+        color: #262626;
         background: transparent;
         font-size: 16px;
         padding-left: 20px;
         box-sizing: border-box
     }
     .loginBox input[type="text"]:hover, .loginBox input[type="password"]:hover{
-        color: #42F3FA;
+        color: #262626;
          border: 1px solid #42F3FA;
-          box-shadow: 0 0 5px rgba(0,255,0,.3), 0 0 10px rgba(0,255,0,.2), 0 0 15px rgba(0,255,0,.1), 0 2px 0 black
+          box-shadow: 0 0 5px rgba(71, 72, 71, 0.3), 0 0 10px rgba(0,255,0,.2), 0 0 15px rgba(0,255,0,.1), 0 2px 0 black
         }
     .loginBox input[type="text"]:focus, .loginBox input[type="password"]:focus{
         border-bottom: 2px solid #42F3FA
@@ -89,7 +89,7 @@ body{margin: 0;
         display: block
     }
     a:hover{
-        color: #00ffff
+        color: #262626
     }
     p{
         color: #0000ff
