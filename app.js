@@ -8,7 +8,6 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const mongoose = require('mongoose');
-// require('dotenv')
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -21,7 +20,7 @@ db.once('open', () => {
   console.log('Connected to MongoDB');
 });
 
-console.log(process.env.MONGODB_URI,"......................");
+// console.log(process.env.MONGODB_URI,"......................");
 
 const userRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');
