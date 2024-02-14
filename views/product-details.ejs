@@ -214,11 +214,17 @@
                                     </a>
                                 </div>
                                 <div class="header-action-icon-2">
-                                    <a class="mini-cart-icon" href="/getCart">
+
+                                    <a class="mini-cart-icon" href="/getCart" title="Cart">
                                         <img alt="Evara" src="/assets/imgs/theme/icons/icon-cart.svg">
-                                        <!-- <span class="pro-count blue">2</span> -->
+                                        <% if(cart) {%>
+                                            <span class="pro-count blue">
+                                                <%= cartItemCount %>
+                                            </span>
+                                            <% } %>
                                     </a>
-                                    
+    
+    
                                 </div>
                             </div>
                         </div>

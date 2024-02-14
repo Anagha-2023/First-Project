@@ -24,6 +24,12 @@ const { error, log } = require("console");
 const product = async (req, res) => {
   try {
     const id = req.params.productId;
+    let cartItemCount = 0;
+    let userId = req.session.user.id
+    const cart = await cartModel.findOne({ owner: userId });
+    if (cart) {
+      cartItemCount = cart.items.length;
+    }
     const product = await productModel.findById(id);
     const category = await CategoryModel.find({});
     if (!product) {
@@ -36,6 +42,8 @@ const product = async (req, res) => {
     res.render("product-details", {
       product,
       category,
+      cartItemCount,
+      cart
     });
   } catch (error) {
     console.error(error);
@@ -111,10 +119,10 @@ let home = async (req, res) => {
 
 
 const getSignup = (req, res) => {
-  if(req.query.reflink){
+  if (req.query.reflink) {
     console.log('l,,kmknmjnjnjnjlkkkn');
-          req.session.reflink= req.query.reflink;
-        }
+    req.session.reflink = req.query.reflink;
+  }
   res.render('userSignup');
 }
 
@@ -535,7 +543,7 @@ const postVerifyOtp = async (req, res, next) => {
               referralLink: uuidv4(),
               userId: newUser.id,
             });
-            console.log(newReferrer,";;;;;;;;;;;;;;;;;;;;;;;;;;;;");
+            console.log(newReferrer, ";;;;;;;;;;;;;;;;;;;;;;;;;;;;");
             newReferrer.save();
 
             newUser.refId = newReferrer._id;
@@ -552,14 +560,14 @@ const postVerifyOtp = async (req, res, next) => {
 
             // Save the updated user
             await newUser.save();
-            console.log(newUser,"beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+            console.log(newUser, "beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
 
             if (req.session.reflink) {
               try {
-                const referal = await Referral.findOne({referralLink:req.session.reflink})
-                const wallet = await Wallet.findOne({user:referal.userId})
+                const referal = await Referral.findOne({ referralLink: req.session.reflink })
+                const wallet = await Wallet.findOne({ user: referal.userId })
 
-                console.log(wallet,"reeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+                console.log(wallet, "reeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
 
                 if (wallet) {
                   const referralAmount = 500;
@@ -638,6 +646,7 @@ const postVerifyOtp = async (req, res, next) => {
 
 
 // Function to render the OTP verification page
+
 const loadOTP = async (req, res) => {
   try {
     if (req.session.otpExpired) {
@@ -783,6 +792,7 @@ const userProfile = async (req, res) => {
       user: true,
       addresses,
       user,
+      cart,
       orderDetails,
       currentPage: page,
       totalPages: totalPages,
@@ -957,7 +967,7 @@ const cancelOrder = async (req, res) => {
     const orderId = req.params.orderId;
 
     // Check if the order exists
-    const order = await orderModel.findById(orderId);
+    const order = await orderModel.findById(orderId).populate('items');
 
     if (!order) {
       return res.status(404).json({
@@ -966,10 +976,10 @@ const cancelOrder = async (req, res) => {
       });
     }
 
-    // Retrieve the products associated with the canceled order
-    const canceledProducts = order.items;
+    // Retrieve the payment method and products associated with the canceled order
+    const paymentMethod = order.paymentMethod;
+    const canceledProducts = order.items || [];
 
-    console.log(canceledProducts)
     // Increase stock counts for each canceled product
     for (const product of canceledProducts) {
       const productId = product.productId;
@@ -996,6 +1006,35 @@ const cancelOrder = async (req, res) => {
     order.status = "Canceled";
     await order.save();
 
+    // Add amount to the user's wallet if payment method is 'Razorpay' or 'wallet'
+    if (paymentMethod === 'Razorpay' || paymentMethod === 'wallet') {
+      let totalCancelledPrice = 0;
+      for (const product of canceledProducts) {
+        const productPrice = product.price * product.quantity;
+        totalCancelledPrice += productPrice;
+      }
+      const userId = order.user.toString(); // Convert ObjectId to string
+      console.log(userId, "------------------------------");
+
+      // Update the wallet balance directly
+      const wallet = await Wallet.findOne({ user: userId });
+      if (!wallet) {
+        return res.status(404).json({
+          success: false,
+          error: "Wallet not found for the user"
+        });
+      }
+      wallet.balance += totalCancelledPrice;
+
+      // Add transaction record to the wallet's transaction history
+      wallet.transactions.push({
+        amount: totalCancelledPrice,
+        type: 'credit' // Indicates a credited transaction
+      });
+
+      await wallet.save();
+    }
+
     return res.json({
       success: true,
       message: "Order canceled successfully"
@@ -1008,6 +1047,11 @@ const cancelOrder = async (req, res) => {
     });
   }
 };
+
+
+
+
+
 
 
 const userAddAddress = async (req, res) => {
@@ -1328,7 +1372,7 @@ const downloadInvoice = async (req, res) => {
     let user = await UserModel.findById(order.user)
 
     console.log("innn")
-    console.log(order, order ?.items);
+    console.log(order, order?.items);
     let products = order.items.map((item, index) => {
       return {
         "quantity": item.quantity,
@@ -1353,7 +1397,7 @@ const downloadInvoice = async (req, res) => {
         "country": "INDIA"
       },
       "client": {
-        "company": user ?.name || "N/A",
+        "company": user?.name || "N/A",
         "address": user.email,
         "city": order.deliveryAddress.city,
         "zip": "PIN :" + order.deliveryAddress.pincode,
@@ -1457,6 +1501,6 @@ module.exports = {
   resetPasswordPost,
   returnOrder,
   createuserReferral,
-  downloadInvoice,  
+  downloadInvoice,
 
 };

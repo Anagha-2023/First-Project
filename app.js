@@ -21,6 +21,8 @@ db.once('open', () => {
   console.log('Connected to MongoDB');
 });
 
+console.log(process.env.MONGODB_URI,"......................");
+
 const userRouter = require('./routes/users');
 const adminRouter = require('./routes/admin');
 

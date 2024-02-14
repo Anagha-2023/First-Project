@@ -7,7 +7,7 @@
       <div class="aside-top">
          <a href="/" class="brand-wrap">
             <img src="/assets/imgs/theme/logo.svg.png" class="logo" alt="HomeWorld Dashboard">
-        </a>
+         </a>
          <div>
             <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i>
             </button>
@@ -45,15 +45,15 @@
 
             <li class="menu-item">
                <a class="menu-link" href="/admin/coupon-management"> <i class="icon material-icons md-redeem"></i>
-                   <span class="text">Coupon Management</span>
+                  <span class="text">Coupon Management</span>
                </a>
-           </li>
+            </li>
 
 
-            
+
          </ul>
          <hr>
-         
+
          <br>
          <br>
       </nav>
@@ -91,7 +91,7 @@
                <li class="nav-item">
                   <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
                </li>
-               
+
                <li class="dropdown nav-item">
                   <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount"
                      aria-expanded="false">
@@ -119,7 +119,7 @@
                <!-- <p>Lorem ipsum dolor sit amet.</p> -->
             </div>
             <div>
-               
+
                <a href="#" class="btn btn-primary btn-sm rounded" data-bs-toggle="modal"
                   data-bs-target="#addProductModal">Add new category</a>
 
@@ -164,9 +164,11 @@
                                        <label for="image" class="form-label">Category Image</label>
                                        <input type="file" class="form-control" id="image" name="image" accept="image/*"
                                           required>
+                                       <img id="imagePreview" src="#" alt="Preview"
+                                          style="max-width: 100px; max-height: 100px; display: none;">
                                     </div>
                                     <div class="modal-footer">
-                                       
+
                                        <button type="button" onclick="submitForm()">Add Category</button>
                                  </form>
                         </div>
@@ -179,7 +181,7 @@
 
          </div>
          </div>
-         
+
 
 
          <div class="card-body">
@@ -240,6 +242,15 @@
                                        aria-label="Close"></button>
                                  </div>
                                  <div class="modal-body">
+
+                                    <% if (error) { %>
+                                       <div class="alert alert-danger" role="alert">
+                                           <%= error %>
+                                       </div>
+                                   <% } %>
+         
+                                          
+
                                     <!-- Your edit form goes here -->
                                     <form action="category-management/edit-category/<%= category._id %>"
                                        enctype="multipart/form-data" method="post">
@@ -439,6 +450,22 @@
          function displayErrorMessage(errorMessage) {
             $('#errorContainer').text(errorMessage);
          }
+      </script>
+
+      <script>
+         // Function to handle file input change and show image preview
+         document.getElementById('image').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+               const reader = new FileReader();
+               reader.onload = function (e) {
+                  const imagePreview = document.getElementById('imagePreview');
+                  imagePreview.src = e.target.result;
+                  imagePreview.style.display = 'block'; // Show the image preview
+               }
+               reader.readAsDataURL(file);
+            }
+         });
       </script>
 
       <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

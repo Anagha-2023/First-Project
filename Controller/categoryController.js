@@ -18,7 +18,8 @@ const categoryManagementGet = async (req, res) => {
             pagetitle: 'Category',
             categories: categories, // Pass the categories to the view
             currentPage:page,
-            totalPages
+            totalPages,
+            error:null
         });
     } catch (error) {
         console.error('Error fetching categories:', error);
@@ -81,12 +82,17 @@ const categoryManagementEdit = async (req, res) => {
         }
 
         // Check if a category with the same name (case-insensitive) already exists
-        const existingCategory = await CategoryModel.findOne({
-            name: { $regex: new RegExp(`^${editName}$`, 'i') },
-        });
+        const existingCategory = await CategoryModel.findOne({ name: { $regex: new RegExp(`^${editName}$`, 'i') } });
 
         if (existingCategory && existingCategory._id.toString() !== categoryId) {
-            return res.status(400).json({ error: 'Category with the same name already exists.' });
+            // Pass the error message to the modal template
+            return res.render('category', {
+                pagetitle: 'Category',
+                categories: [],
+                currentPage: page,
+                totalPages: 0,
+                error: 'Category with the same name already exists.'
+            });
         }
 
         // Update name and description
@@ -113,13 +119,15 @@ const categoryManagementEdit = async (req, res) => {
             pagetitle: 'Category',
             categories: categories,
             currentPage: page,
-            totalPages,
+            totalPages: totalPages,
         });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
+
 
 
 
