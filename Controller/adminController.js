@@ -231,6 +231,8 @@ let adminhome = async (req, res) => {
     let totalOrders = monthly.totalOrders;
     let averageSales = monthly.averageSales;
     let averageRevenue = monthly.averageRevenue;
+    
+    console.log(salesReportData,"'''''''''''''''''''''''''''''''''''''''")
 
     console.log(monthly.totalOrders, "////////////////////////////");
     console.log(monthly.Revenue, "////////////////////////////");
@@ -249,30 +251,31 @@ const fetchSalesReport = async () => {
     const orders = await orderModel.find({ status: "Delivered" }).populate('user', 'name');
 
     // Prepare the sales report data
-    const salesReportData = orders.map(async order => {
-      return order.items.map(async item => {
+    const salesReportData = [];
+
+    for (const order of orders) {
+      for (const item of order.items) {
         const product = await productModel.findById(item.productId);
         if (order.user) { // Check if order.user exists
-          return {
+          salesReportData.push({
             productName: product.productName,
             totalStock: product.countInStock,
             remainingStock: product.countInStock - item.quantity,
             customerName: order.user.name,
-            totalRevenue: order.billTotal
-          };
-        } else {
-          return null; // Return null if order.user does not exist
+            totalRevenue: order.billTotal,
+            paymentMethod: order.paymentMethod // assuming paymentMethod is available in order
+          });
         }
-      });
-    });
+      }
+    }
 
-    // Flatten the array of arrays and await all promises
-    return (await Promise.all(salesReportData.flat())).filter(Boolean); // Remove any undefined values
+    return salesReportData;
   } catch (error) {
     console.error("Error fetching sales report:", error);
     throw error;
   }
 };
+
 
 
 
