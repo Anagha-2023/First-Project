@@ -118,6 +118,7 @@ const categoryManagementEdit = async (req, res) => {
     }
 };
 
+
 const categoryManagementFeatured = async (req, res) => {
     try {
         let { categoryId } = req.body
